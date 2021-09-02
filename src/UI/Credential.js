@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { DateTime } from 'luxon'
 
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
@@ -89,52 +90,38 @@ function Credential(props) {
     ) {
       const values = credentialSelected.credential.values
       console.log(credentialSelected.credential.values, 'creds')
-      showAttributes.trusted_traveler_id = values.trusted_traveler_id.raw || ''
-      showAttributes.traveler_first_name = values.traveler_first_name.raw || ''
-      showAttributes.traveler_last_name = values.traveler_last_name.raw || ''
+
+      showAttributes.traveler_surnames = values.traveler_surnames.raw || ''
+      showAttributes.traveler_given_names =
+        values.traveler_given_names.raw || ''
       showAttributes.traveler_date_of_birth =
-        values.traveler_date_of_birth.raw || ''
-      showAttributes.trusted_date_time = values.trusted_date_time.raw || ''
+        new DateTime.fromSeconds(
+          parseInt(values.traveler_date_of_birth.raw)
+        ).toLocaleString(DateTime.DATE_MED) || ''
+      showAttributes.traveler_gender_legal =
+        values.traveler_gender_legal.raw || ''
+      showAttributes.traveler_country = values.traveler_country.raw || ''
+      showAttributes.traveler_origin_country =
+        values.traveler_origin_country.raw || ''
+      showAttributes.traveler_email = values.traveler_email.raw || ''
 
-      // showAttributes.result = values.result.raw || ''
-      // showAttributes.normality = values.normality.raw || ''
-      // showAttributes.result_status = values.result_status.raw || ''
-      // showAttributes.comment = values.comment.raw || ''
-      // showAttributes.date_time_of_message =
-      //   values.date_time_of_message.raw || ''
-      // showAttributes.sending_facility = values.sending_facility.raw || ''
-      // showAttributes.ordering_facility_name =
-      //   values.ordering_facility_name.raw || ''
-      // showAttributes.ordering_facility_address =
-      //   values.ordering_facility_address.raw || ''
-      // showAttributes.performing_lab = values.performing_lab.raw || ''
-      // showAttributes.visit_location = values.visit_location.raw || ''
-      // showAttributes.lab_order_id = values.lab_order_id.raw || ''
-      // showAttributes.lab_code = values.lab_code.raw || ''
-      // showAttributes.lab_coding_qualifer = values.lab_coding_qualifer.raw || ''
-      // showAttributes.lab_description = values.lab_description.raw || ''
-      // showAttributes.lab_specimen_collected_date =
-      //   values.lab_specimen_collected_date.raw || ''
-      // showAttributes.observation_date_time =
-      //   values.observation_date_time.raw || ''
+      showAttributes.trusted_traveler_id = values.trusted_traveler_id.raw || ''
+      showAttributes.trusted_traveler_issue_date_time =
+        new DateTime.fromSeconds(
+          parseInt(values.trusted_traveler_issue_date_time.raw)
+        ).toLocaleString(DateTime.DATETIME_MED) || ''
+      showAttributes.trusted_traveler_expiration_date_time =
+        new DateTime.fromSeconds(
+          parseInt(values.trusted_traveler_expiration_date_time.raw)
+        ).toLocaleString(DateTime.DATETIME_MED) || ''
+      showAttributes.governance_applied = values.governance_applied.raw || ''
 
-      // showAttributes.mpid = values.mpid.raw || ''
-      // showAttributes.patient_local_id = values.patient_local_id.raw || ''
-      // showAttributes.patient_name =
-      //   values.patient_first_name.raw + ' ' + values.patient_last_name.raw
-      // showAttributes.patient_first_name = values.patient_first_name.raw || ''
-      // showAttributes.patient_last_name = values.patient_last_name.raw || ''
-      // showAttributes.patient_date_of_birth =
-      //   values.patient_date_of_birth.raw || ''
-      // showAttributes.patient_gender_legal =
-      //   values.patient_gender_legal.raw || ''
-      // showAttributes.patient_phone = values.patient_phone.raw || ''
-      // showAttributes.patient_street_address =
-      //   values.patient_street_address.raw || ''
-      // showAttributes.patient_city = values.patient_city.raw || ''
-      // showAttributes.patient_state = values.patient_state.raw || ''
-      // showAttributes.patient_postalcode = values.patient_postalcode.raw || ''
-      // showAttributes.patient_country = values.patient_country.raw || ''
+      showAttributes.credential_issuer_name =
+        values.credential_issuer_name.raw || ''
+      showAttributes.credential_issue_date =
+        new DateTime.fromSeconds(
+          parseInt(values.credential_issue_date.raw)
+        ).toLocaleString(DateTime.DATE_MED) || ''
     }
   }
 
@@ -144,9 +131,9 @@ function Credential(props) {
         title={
           showCredential.name +
           ' for ' +
-          showAttributes.traveler_first_name +
+          showAttributes.traveler_given_names +
           ' ' +
-          showAttributes.traveler_last_name
+          showAttributes.traveler_surnames
         }
       />
       <PageSection>
@@ -171,147 +158,66 @@ function Credential(props) {
             </AttributeRow>
           </tbody>
         </AttributeTable>
-        <h2>Test Information</h2>
+        <h2>Traveler Information</h2>
         <AttributeTable>
           <tbody>
             <AttributeRow>
-              <th>Trusted Traveler ID:</th>
-              <td>{showAttributes.trusted_traveler_id}</td>
+              <th>Traveler Surnames:</th>
+              <td>{showAttributes.traveler_surnames}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Traveler First Name:</th>
-              <td>{showAttributes.traveler_first_name}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Traveler Last Name:</th>
-              <td>{showAttributes.traveler_last_name}</td>
+              <th>Traveler Given Names:</th>
+              <td>{showAttributes.traveler_given_names}</td>
             </AttributeRow>
             <AttributeRow>
               <th>Traveler Date of Birth:</th>
               <td>{showAttributes.traveler_date_of_birth}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Trusted Date Time:</th>
-              <td>{showAttributes.trusted_date_time}</td>
-            </AttributeRow>
-            {/* <AttributeRow>
-              <th>Result:</th>
-              <td>{showAttributes.result}</td>
+              <th>Traveler Gender Legal:</th>
+              <td>{showAttributes.traveler_gender_legal}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Normality:</th>
-              <td>{showAttributes.normality}</td>
+              <th>Traveler Country:</th>
+              <td>{showAttributes.traveler_country}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Result Status:</th>
-              <td>{showAttributes.result_status}</td>
+              <th>Traveler Origin Country:</th>
+              <td>{showAttributes.traveler_origin_country}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Comment:</th>
-              <td>{showAttributes.comment}</td>
+              <th>Traveler Email:</th>
+              <td>{showAttributes.traveler_email}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Date/Time of Message:</th>
-              <td>{showAttributes.date_time_of_message}</td>
+              <th>Trusted Traveler ID:</th>
+              <td>{showAttributes.trusted_traveler_id}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Sending Facility:</th>
-              <td>{showAttributes.sending_facility}</td>
+              <th>Trusted Traveler Issue Date Time:</th>
+              <td>{showAttributes.trusted_traveler_issue_date_time}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Ordering Facility Name:</th>
-              <td>{showAttributes.ordering_facility_name}</td>
+              <th>Trusted Traveler Expiration Date Time:</th>
+              <td>{showAttributes.trusted_traveler_expiration_date_time}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Ordering Facility Address:</th>
-              <td>{showAttributes.ordering_facility_address}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Performing Lab:</th>
-              <td>{showAttributes.performing_lab}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Visit Location:</th>
-              <td>{showAttributes.visit_location}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Lab Order ID:</th>
-              <td>{showAttributes.lab_order_id}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Lab Code:</th>
-              <td>{showAttributes.lab_code}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Lab Coding Qualifier:</th>
-              <td>{showAttributes.lab_coding_qualifer}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Lab Description:</th>
-              <td>{showAttributes.lab_description}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Lab Specimen Collected Date:</th>
-              <td>{showAttributes.lab_specimen_collected_date}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Observation Date Time:</th>
-              <td>{showAttributes.observation_date_time}</td>
+              <th>Governance Applied:</th>
+              <td>{showAttributes.governance_applied}</td>
             </AttributeRow>
           </tbody>
         </AttributeTable>
-
-        <h2>Patient Information</h2>
+        <h2>Credential Information</h2>
         <AttributeTable>
           <tbody>
             <AttributeRow>
-              <th>MPID:</th>
-              <td>{showAttributes.mpid}</td>
+              <th>Credential Issuer Name:</th>
+              <td>{showAttributes.credential_issuer_name}</td>
             </AttributeRow>
             <AttributeRow>
-              <th>Local ID:</th>
-              <td>{showAttributes.patient_local_id}</td>
+              <th>Credential Issue Date:</th>
+              <td>{showAttributes.credential_issue_date}</td>
             </AttributeRow>
-            <AttributeRow>
-              <th>First Name:</th>
-              <td>{showAttributes.patient_first_name}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Last Name:</th>
-              <td>{showAttributes.patient_last_name}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Date of Birth:</th>
-              <td>{showAttributes.patient_date_of_birth}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Legal Gender:</th>
-              <td>{showAttributes.patient_gender_legal}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Phone Number:</th>
-              <td>{showAttributes.patient_phone}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Street Address:</th>
-              <td>{showAttributes.patient_street_address}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>City:</th>
-              <td>{showAttributes.patient_city}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>State:</th>
-              <td>{showAttributes.patient_state}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Postal Code:</th>
-              <td>{showAttributes.patient_postalcode}</td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Country:</th>
-              <td>{showAttributes.patient_country}</td>
-            </AttributeRow> */}
           </tbody>
         </AttributeTable>
       </PageSection>
