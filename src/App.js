@@ -98,6 +98,8 @@ function App() {
   const [successMessage, setSuccessMessage] = useState(null)
   const [organizationName, setOrganizationName] = useState(null)
 
+  const [siteTitle, setSiteTitle] = useState('')
+
   // session states
   const [session, setSession] = useState('')
   const [loggedInUserId, setLoggedInUserId] = useState('')
@@ -161,6 +163,11 @@ function App() {
       })
   }, [loggedIn])
 
+  // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
+  useEffect(() => {
+    document.title = siteTitle
+  }, [siteTitle])
+
   // Define Websocket event listeners
   useEffect(() => {
     // Perform operation on websocket open
@@ -195,7 +202,7 @@ function App() {
           addLoadingProcess('ROLES')
         }
 
-        sendMessage('SETTINGS', 'GET_ORGANIZATION_NAME', {})
+        sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
         addLoadingProcess('ORGANIZATION')
 
         sendMessage('IMAGES', 'GET_ALL', {})
@@ -539,7 +546,7 @@ function App() {
                     oldCredential !== null &&
                     newCredential !== null &&
                     oldCredential.credential_exchange_id ===
-                    newCredential.credential_exchange_id
+                      newCredential.credential_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     oldCredentials.splice(index, 1)
@@ -624,6 +631,7 @@ function App() {
 
             case 'SETTINGS_ORGANIZATION':
               setOrganizationName(data.companyName)
+              setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
               break
 

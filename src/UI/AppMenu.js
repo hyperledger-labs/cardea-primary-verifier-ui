@@ -61,7 +61,6 @@ const StyledSubLink = styled(NavLink)`
   }
 `
 function AppMenu(props) {
-
   const localUser = props.loggedInUserState
 
   console.log(localUser)
