@@ -83,6 +83,7 @@ function App() {
   // Check for local state copy of theme, otherwise use default hard coded here in App.js
   const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
   const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
+  const [schemas, setSchemas] = useState({})
 
   // Styles to change array
   const [stylesArray, setStylesArray] = useState([])
@@ -182,6 +183,8 @@ function App() {
 
         sendMessage('SETTINGS', 'GET_THEME', {})
         addLoadingProcess('THEME')
+        sendMessage('SETTINGS', 'GET_SCHEMAS', {})
+        addLoadingProcess('SCHEMAS')
 
         if (
           check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
@@ -546,7 +549,7 @@ function App() {
                     oldCredential !== null &&
                     newCredential !== null &&
                     oldCredential.credential_exchange_id ===
-                      newCredential.credential_exchange_id
+                    newCredential.credential_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     oldCredentials.splice(index, 1)
@@ -624,6 +627,11 @@ function App() {
               removeLoadingProcess('THEME')
               break
 
+            case 'SETTINGS_SCHEMAS':
+              setSchemas(data)
+              removeLoadingProcess('SCHEMAS')
+              break
+
             case 'LOGO':
               setImage(data)
               removeLoadingProcess('LOGO')
@@ -664,23 +672,6 @@ function App() {
             case 'IMAGES_ERROR':
               console.log('Images Error:', data.error)
               setErrorMessage(data.error)
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'ORGANIZATION':
-          switch (type) {
-            case 'ORGANIZATION_NAME':
-              setOrganizationName(data[0].value.name)
-
-              removeLoadingProcess('ORGANIZATION')
               break
 
             default:
@@ -1020,6 +1011,7 @@ function App() {
                               contactId={match.params.contactId}
                               contacts={contacts}
                               credentials={credentials}
+                              schemas={schemas}
                             />
                           </Main>
                         </Frame>
