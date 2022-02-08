@@ -46,9 +46,9 @@ function Home(props) {
   const closeContactModal = () => setContactModalIsOpen(false)
   const closeCredentialModal = () => setCredentialModalIsOpen(false)
 
-  const addContact = () => {
+  const presentOutOfBand = () => {
     setContactModalIsOpen((o) => !o)
-    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
   }
 
   return (
@@ -58,7 +58,9 @@ function Home(props) {
           user={localUser}
           perform="contacts:create"
           yes={() => (
-            <ContentFlexBox onClick={addContact}>Add Contact</ContentFlexBox>
+            <ContentFlexBox onClick={presentOutOfBand}>
+              Add Contact
+            </ContentFlexBox>
           )}
         />
       </HeaderHolder>
