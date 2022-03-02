@@ -128,15 +128,21 @@ function FormTrustedTraveler(props) {
   const trusted_traveler_id = ''
   const first_name =
     props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Passport.given_names)
+        )
       : ''
   const last_name =
     props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Passport.surname)
+        )
       : ''
   const date_of_birth =
     props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.date_of_birth))
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Passport.date_of_birth)
+        )
       : ''
   const trusted_date_time = ''
 
@@ -148,7 +154,7 @@ function FormTrustedTraveler(props) {
 
     let attributes = {}
     if (props.contactSelected) {
-      // const demographics = props.contactSelected.Demographic
+      // const traveler = props.contactSelected.Traveler
       // const passport = props.contactSelected.Passport
 
       attributes = [
