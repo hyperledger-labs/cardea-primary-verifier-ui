@@ -3,16 +3,17 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import FormQR from './FormQR'
+import FormInvitationAccept from './FormInvitationAccept'
 // import { useNotification } from './NotificationProvider'
 
 import { CanUser } from './CanUser'
 
-const HeaderHolder = styled.div`
+const DashboardRow = styled.div`
   display: flex;
   justify-content: space-between;
 `
 
-const ContentFlexBox = styled.div`
+const DashboardButton = styled.div`
   width: 32%;
   min-width: 240px;
   height: 150px;
@@ -34,40 +35,96 @@ const ContentFlexBox = styled.div`
   }
 `
 
+const DashboardPlaceholder = styled.div`
+  width: 32%;
+  min-width: 240px;
+  height: 150px;
+  margin-bottom: 30px;
+  padding: 0 25px;
+`
+
 function Home(props) {
   const localUser = props.loggedInUserState
 
   // Accessing notification context
   // const setNotification = useNotification()
 
-  const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
-  const [credentialModalIsOpen, setCredentialModalIsOpen] = useState(false)
+  const [oob, setOOB] = useState(false)
 
-  const closeContactModal = () => setContactModalIsOpen(false)
-  const closeCredentialModal = () => setCredentialModalIsOpen(false)
+  const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
+  const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
+
+  const closeScanModal = () => setScanModalIsOpen(false)
+  const closeDisplayModal = () => setDisplayModalIsOpen(false)
+
+  const scanInvite = (type) => {
+    type === 'oob' ? setOOB(true) : setOOB(false)
+
+    setScanModalIsOpen((o) => !o)
+  }
 
   const presentOutOfBand = () => {
-    setContactModalIsOpen((o) => !o)
+    setDisplayModalIsOpen((o) => !o)
     props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+  }
+
+  const presentInvitation = () => {
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
   }
 
   return (
     <>
-      <HeaderHolder>
+      <DashboardRow>
         <CanUser
           user={localUser}
           perform="contacts:create"
           yes={() => (
-            <ContentFlexBox onClick={presentOutOfBand}>
-              Add Contact
-            </ContentFlexBox>
+            <DashboardButton onClick={() => scanInvite('connection')}>
+              Scan QR Code
+            </DashboardButton>
           )}
         />
-      </HeaderHolder>
+        <CanUser
+          user={localUser}
+          perform="contacts:create"
+          yes={() => (
+            <DashboardButton onClick={presentInvitation}>
+              Display QR Code
+            </DashboardButton>
+          )}
+        />
+        <CanUser
+          user={localUser}
+          perform="contacts:create"
+          yes={() => (
+            <DashboardButton onClick={() => scanInvite('oob')}>
+              Scan OOB
+            </DashboardButton>
+          )}
+        />
+        <CanUser
+          user={localUser}
+          perform="contacts:create"
+          yes={() => (
+            <DashboardButton onClick={presentOutOfBand}>
+              Display OOB
+            </DashboardButton>
+          )}
+        />
+        <DashboardPlaceholder></DashboardPlaceholder>
+      </DashboardRow>
+      <FormInvitationAccept
+        oob={oob}
+        contactModalIsOpen={scanModalIsOpen}
+        closeContactModal={closeScanModal}
+        sendRequest={props.sendRequest}
+      />
       <FormQR
-        contactModalIsOpen={contactModalIsOpen}
-        closeContactModal={closeContactModal}
+        contactModalIsOpen={displayModalIsOpen}
+        closeContactModal={closeDisplayModal}
         QRCodeURL={props.QRCodeURL}
+        sendRequest={props.sendRequest}
       />
     </>
   )

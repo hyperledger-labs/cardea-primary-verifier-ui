@@ -267,6 +267,46 @@ function App() {
           }
           break
 
+        case 'INVITATIONS':
+          switch (type) {
+            case 'INVITATION':
+              setQRCodeURL(data.invitation_record.invitation_url)
+              break
+
+            case 'SINGLE_USE_USED':
+              if (data.workflow === 'client_employee') {
+                // (mikekebert) Reset the QR code URL (which also closes the QR code modal)
+                setQRCodeURL('')
+                // (mikekebert) Set the pending employee connection_id (which also opens the employee credential form)
+                setPendingEmployeeConnectionID(data.connection_id)
+              }
+              if (data.workflow === 'client_immunization') {
+                // (mikekebert) Reset the QR code URL (which also closes the QR code modal)
+                setQRCodeURL('')
+                // (mikekebert) Open the pending verification notice
+                setPendingVerificationNotice(true)
+              } else {
+                // (mikekebert) Reset the QR code URL (which also closes the QR code modal)
+                setQRCodeURL('')
+              }
+              break
+
+            case 'INVITATIONS_ERROR':
+              console.log(data.error)
+              console.log('Invitations Error')
+              setErrorMessage(data.error)
+
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
