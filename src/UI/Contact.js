@@ -467,11 +467,11 @@ function Contact(props) {
                       )
                 }
               >
-                Issue Trusted Traveler (governance)
+                Issue Trusted Traveler
               </IssueCredential>
             )}
           />
-          <CanUser
+          {/* <CanUser
             user={localUser}
             perform="credentials:issue"
             yes={() => (
@@ -524,7 +524,7 @@ function Contact(props) {
                 Issue Trusted Traveler - Vaccine
               </IssueCredential>
             )}
-          />
+          /> */}
           <DataTable>
             <thead>
               <DataRow>

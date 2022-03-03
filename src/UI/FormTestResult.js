@@ -383,7 +383,7 @@ function FormTestResult(props) {
                   type="text"
                   name="sending_facility"
                   id="sending_facility"
-                  placeholder="Avicennastraat 2, Aruba"
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -392,7 +392,7 @@ function FormTestResult(props) {
                   type="text"
                   name="visit_location"
                   id="visit_location"
-                  placeholder="Avicennastraat 2, Aruba"
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -472,7 +472,7 @@ function FormTestResult(props) {
                   type="text"
                   name="ordering_facility_address"
                   id="ordering_facility_address"
-                  placeholder="Avicennastraat 2, Aruba"
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -483,7 +483,7 @@ function FormTestResult(props) {
                   type="text"
                   name="ordering_facility_name"
                   id="ordering_facility_name"
-                  placeholder="Aruba Travel Dept."
+                  placeholder="<your country here> Travel Dept."
                 />
               </InputBox>
               <InputBox>
