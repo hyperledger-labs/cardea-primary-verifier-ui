@@ -30,39 +30,32 @@ function FormContacts(props) {
       ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.phone))
       : ''
   const street_address =
-    props.contactSelected &&
-    props.contactSelected.Demographic
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
           JSON.stringify(props.contactSelected.Demographic.street_address)
         )
       : ''
   const city =
-    props.contactSelected &&
-    props.contactSelected.Demographic
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.city)
-        )
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.city))
       : ''
   const state_province_region =
-    props.contactSelected &&
-    props.contactSelected.Demographic
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.state_province_region)
+          JSON.stringify(
+            props.contactSelected.Demographic.state_province_region
+          )
         )
       : ''
   const postal_code =
-    props.contactSelected &&
-    props.contactSelected.Demographic
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
           JSON.stringify(props.contactSelected.Demographic.postal_code)
         )
       : ''
   const country =
-    props.contactSelected &&
-    props.contactSelected.Demographic
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.country)
-        )
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.country))
       : ''
   // const country =
   //   props.contactSelected &&
@@ -172,7 +165,9 @@ function FormContacts(props) {
     passport.type = form.get('type')
     passport.issuing_country = form.get('issuing_country')
     passport.authority = form.get('authority')
-    passport.photo = props.contactSelected.Passport.photo ? props.contactSelected.Passport.photo.data : ''
+    passport.photo = props.contactSelected.Passport.photo
+      ? props.contactSelected.Passport.photo.data
+      : ''
 
     props.submitPassport(passport, e)
 
@@ -233,7 +228,9 @@ function FormContacts(props) {
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="state_province_region">State/Province</ModalLabel>
+                <ModalLabel htmlFor="state_province_region">
+                  State/Province
+                </ModalLabel>
                 <InputFieldModal
                   type="text"
                   name="state_province_region"
@@ -369,7 +366,9 @@ function FormContacts(props) {
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="issuing_country">Issuing Country</ModalLabel>
+                <ModalLabel htmlFor="issuing_country">
+                  Issuing Country
+                </ModalLabel>
                 <InputFieldModal
                   type="text"
                   name="issuing_country"

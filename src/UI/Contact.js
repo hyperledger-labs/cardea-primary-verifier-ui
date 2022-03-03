@@ -178,9 +178,7 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_birth.split(
-                      'T'
-                    )[0] || ''
+                  ? contactSelected.Passport.date_of_birth.split('T')[0] || ''
                   : ''}
               </td>
             </AttributeRow>
@@ -207,9 +205,7 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_issue.split(
-                      'T'
-                    )[0] || ''
+                  ? contactSelected.Passport.date_of_issue.split('T')[0] || ''
                   : ''}
               </td>
             </AttributeRow>
@@ -218,9 +214,8 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_expiration.split(
-                      'T'
-                    )[0] || ''
+                  ? contactSelected.Passport.date_of_expiration.split('T')[0] ||
+                    ''
                   : ''}
               </td>
             </AttributeRow>
@@ -434,8 +429,7 @@ function Contact(props) {
                 <td>
                   {contactSelected.Demographic !== null &&
                   contactSelected.Demographic !== undefined
-                    ? contactSelected.Demographic
-                        .postal_code || ''
+                    ? contactSelected.Demographic.postal_code || ''
                     : ''}
                 </td>
               </AttributeRow>
