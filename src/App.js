@@ -101,6 +101,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const [organizationName, setOrganizationName] = useState(null)
+  const [smtp, setSmtp] = useState(null)
 
   const [siteTitle, setSiteTitle] = useState('')
 
@@ -217,6 +218,11 @@ function App() {
 
         sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
         addLoadingProcess('ORGANIZATION')
+
+        if (check(rules, loggedInUserState, 'settings:update')) {
+          sendMessage('SETTINGS', 'GET_SMTP', {})
+          addLoadingProcess('SMTP')
+        }
 
         sendMessage('IMAGES', 'GET_ALL', {})
         addLoadingProcess('LOGO')
@@ -686,6 +692,11 @@ function App() {
               setOrganizationName(data.organizationName)
               setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
+              break
+
+            case 'SETTINGS_SMTP':
+              setSmtp(data.value)
+              removeLoadingProcess('SMTP')
               break
 
             case 'SETTINGS_ERROR':
@@ -1344,6 +1355,7 @@ function App() {
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
+                              smtp={smtp}
                             />
                           </Main>
                         </Frame>
