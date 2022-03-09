@@ -222,10 +222,10 @@ function FormTestResult(props) {
     }
     let newCredential = {
       connectionID: props.contactSelected.Connections[0].connection_id,
-      schemaID: 'X2JpGAqC7ZFY4hwKG6kLw9:2:Covid_19_Lab_Result:1.5',
-      schemaVersion: '1.5',
-      schemaName: 'Covid_19_Lab_Result',
-      schemaIssuerDID: 'X2JpGAqC7ZFY4hwKG6kLw9',
+      schemaID: 'RuuJwd3JMffNwZ43DcJKN1:2:Lab_Result:1.4',
+      schemaVersion: '1.4',
+      schemaName: 'Lab_Result',
+      schemaIssuerDID: 'RuuJwd3JMffNwZ43DcJKN1',
       comment: form.get('comment'),
       attributes: attributes,
     }
@@ -383,7 +383,7 @@ function FormTestResult(props) {
                   type="text"
                   name="sending_facility"
                   id="sending_facility"
-                  placeholder=""
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -392,7 +392,7 @@ function FormTestResult(props) {
                   type="text"
                   name="visit_location"
                   id="visit_location"
-                  placeholder=""
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -472,7 +472,7 @@ function FormTestResult(props) {
                   type="text"
                   name="ordering_facility_address"
                   id="ordering_facility_address"
-                  placeholder=""
+                  placeholder="Avicennastraat 2"
                 />
               </InputBox>
               <InputBox>
@@ -483,7 +483,7 @@ function FormTestResult(props) {
                   type="text"
                   name="ordering_facility_name"
                   id="ordering_facility_name"
-                  placeholder="Travel Dept."
+                  placeholder="<your country here> Travel Dept."
                 />
               </InputBox>
               <InputBox>
