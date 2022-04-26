@@ -1,5 +1,4 @@
 # Cardea Government Enterprise Agent Web App
-
 The Cardea Government Enterprise Agent Web App is a single-page app (SPA) for organizations who issue and verify self-sovereign identity (SSI) credentials via an Aries cloud agent (such as [ACA-Py](https://github.com/hyperledger/aries-cloudagent-python)). This app provides a friendly UI for end-users that can be easily deployed to a private or public cloud and accessed from any modern web browser.
 
 For an introduction to self-sovereign identity (SSI), please see [Phil Windley's article](https://www.windley.com/archives/2018/09/multi-source_and_self-sovereign_identity.shtml) on the topic.
@@ -77,9 +76,9 @@ If you are a new contributor to the project, please read our [contribution guide
 
 ## License
 
-Copyright © The Cardea Project 2021. Confidential. All rights reserved.
+Copyright © The Cardea Project 2022. All rights reserved. 
 
-Please see the LICENSE file for the complete license and copyright statement.
+This project is licensed under the Apache License Version 2.0. Please see the LICENSE.md file for the complete license and the LICENSE_3RD_PARTY.md file for a list of dependencies and their licenses.
 
 ## Developer Certificate of Origin (DCO)
 
