@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 
 import {
   BrowserRouter as Router,
@@ -25,6 +25,8 @@ import ForgotPassword from './UI/ForgotPassword'
 import FullPageSpinner from './UI/FullPageSpinner'
 import Home from './UI/Home'
 import Login from './UI/Login'
+import Presentation from './UI/Presentation'
+import Presentations from './UI/Presentations'
 import {
   useNotification,
   NotificationProvider,
@@ -66,8 +68,8 @@ function App() {
 
   const cookies = new Cookies()
 
-  // Keep track of loading processes
-  let loadingArray = []
+  // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
+  const loadingList = useMemo(() => [], [])
 
   const setNotification = useNotification()
 
@@ -76,6 +78,7 @@ function App() {
 
   // Used for websocket auto reconnect
   const [websocket, setWebsocket] = useState(false)
+  const [readyForMessages, setReadyForMessages] = useState(false)
 
   // State governs whether the app should be loaded. Depends on the loadingArray
   const [appIsLoaded, setAppIsLoaded] = useState(false)
@@ -91,6 +94,7 @@ function App() {
   // Message states
   const [contacts, setContacts] = useState([])
   const [credentials, setCredentials] = useState([])
+  const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
   const [roles, setRoles] = useState([])
   const [users, setUsers] = useState([])
@@ -98,6 +102,9 @@ function App() {
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const [organizationName, setOrganizationName] = useState(null)
+  const [smtp, setSmtp] = useState(null)
+
+  const [privileges, setPrivileges] = useState([])
 
   const [siteTitle, setSiteTitle] = useState('')
 
@@ -127,16 +134,6 @@ function App() {
 
   // Perform First Time Setup. Connect to Controller Server via Websockets
 
-  // Setting up websocket and controllerSocket
-  useEffect(() => {
-    if (session && loggedIn && websocket) {
-      let url = new URL('/api/ws', window.location.href)
-      url.protocol = url.protocol.replace('http', 'ws')
-      controllerSocket.current = new WebSocket(url.href)
-      setWebsocket(true)
-    }
-  }, [loggedIn, session, websocket])
-
   // TODO: Setting logged-in user and session states on app mount
   useEffect(() => {
     Axios({
@@ -144,13 +141,10 @@ function App() {
       url: '/api/renew-session',
     })
       .then((res) => {
-        // console.log(res)
-
         if (cookies.get('sessionId')) {
           // Update session expiration date
           setSession(cookies.get('sessionId'))
           setLoggedIn(true)
-          setWebsocket(true)
 
           setLoggedInUserState(res.data)
           setLoggedInUserId(res.data.id)
@@ -164,66 +158,23 @@ function App() {
       })
   }, [loggedIn])
 
-  // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
+  // Setting up websocket and controllerSocket
   useEffect(() => {
-    document.title = siteTitle
-  }, [siteTitle])
+    if (session && loggedIn) {
+      let url = new URL('/api/ws', window.location.href)
+      url.protocol = url.protocol.replace('http', 'ws')
+      controllerSocket.current = new WebSocket(url.href)
 
-  // Define Websocket event listeners
-  useEffect(() => {
-    // Perform operation on websocket open
-    // Run web sockets only if authenticated
-    if (session && loggedIn && websocket) {
       controllerSocket.current.onopen = () => {
-        // Resetting state to false to allow spinner while waiting for messages
-        setAppIsLoaded(false) // This doesn't work as expected. See function removeLoadingProcess
-
-        // Wait for the roles for come back to start sending messages
-        // console.log('Ready to send messages')
-
-        sendMessage('SETTINGS', 'GET_THEME', {})
-        addLoadingProcess('THEME')
-        sendMessage('SETTINGS', 'GET_SCHEMAS', {})
-        addLoadingProcess('SCHEMAS')
-
-        if (
-          check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
-        ) {
-          sendMessage('CONTACTS', 'GET_ALL', {
-            additional_tables: ['Demographic', 'Passport'],
-          })
-          addLoadingProcess('CONTACTS')
-        }
-
-        if (check(rules, loggedInUserState, 'credentials:read')) {
-          sendMessage('CREDENTIALS', 'GET_ALL', {})
-          addLoadingProcess('CREDENTIALS')
-        }
-
-        if (check(rules, loggedInUserState, 'roles:read')) {
-          sendMessage('ROLES', 'GET_ALL', {})
-          addLoadingProcess('ROLES')
-        }
-
-        sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
-        addLoadingProcess('ORGANIZATION')
-
-        sendMessage('IMAGES', 'GET_ALL', {})
-        addLoadingProcess('LOGO')
-
-        // This is the example of atuthorizing websockets
-        if (check(rules, loggedInUserState, 'users:read')) {
-          sendMessage('USERS', 'GET_ALL', {})
-          addLoadingProcess('USERS')
-        }
+        setWebsocket(true)
       }
 
       controllerSocket.current.onclose = (event) => {
         // Auto Reopen websocket connection
         // (JamesKEbert) TODO: Converse on sessions, session timeout and associated UI
 
-        setLoggedIn(false)
-        setWebsocket(!websocket)
+        setReadyForMessages(false)
+        setWebsocket(false)
       }
 
       // Error Handler
@@ -242,17 +193,81 @@ function App() {
         )
       }
     }
-  }, [session, loggedIn, users, user, websocket, image, loggedInUserState]) // (Eldersonar) We have to listen to all 7 to for the app to function properly
+  }, [loggedIn, session])
+
+  // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
+  useEffect(() => {
+    document.title = siteTitle
+  }, [siteTitle])
+
+  useEffect(() => {
+    // Perform operation on websocket open
+    // Run web sockets only if authenticated
+    if (
+      session &&
+      loggedIn &&
+      websocket &&
+      readyForMessages &&
+      loggedInUserState &&
+      loadingList.length === 0
+    ) {
+      sendMessage('SETTINGS', 'GET_THEME', {})
+      addLoadingProcess('THEME')
+      sendMessage('SETTINGS', 'GET_SCHEMAS', {})
+      addLoadingProcess('SCHEMAS')
+      sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+      addLoadingProcess('GOVERNANCE')
+
+      if (check(rules, loggedInUserState, 'contacts:read', 'travelers:read')) {
+        sendMessage('CONTACTS', 'GET_ALL', {
+          additional_tables: ['Demographic', 'Passport'],
+        })
+        addLoadingProcess('CONTACTS')
+      }
+
+      if (check(rules, loggedInUserState, 'credentials:read')) {
+        sendMessage('CREDENTIALS', 'GET_ALL', {})
+        addLoadingProcess('CREDENTIALS')
+      }
+
+      if (check(rules, loggedInUserState, 'presentations:read')) {
+        sendMessage('PRESENTATIONS', 'GET_ALL', {})
+        addLoadingProcess('PRESENTATIONS')
+      }
+
+      if (check(rules, loggedInUserState, 'roles:read')) {
+        sendMessage('ROLES', 'GET_ALL', {})
+        addLoadingProcess('ROLES')
+      }
+
+      sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
+      addLoadingProcess('ORGANIZATION')
+
+      if (check(rules, loggedInUserState, 'settings:update')) {
+        sendMessage('SETTINGS', 'GET_SMTP', {})
+        addLoadingProcess('SMTP')
+      }
+
+      sendMessage('IMAGES', 'GET_ALL', {})
+      addLoadingProcess('LOGO')
+
+      if (check(rules, loggedInUserState, 'users:read')) {
+        sendMessage('USERS', 'GET_ALL', {})
+        addLoadingProcess('USERS')
+      }
+    }
+  }, [session, loggedIn, websocket, readyForMessages, loggedInUserState])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
     controllerSocket.current.close(code, reason)
-    // console.log(controllerSocket.current)
   }
 
   // Send a message to the Controller server
   function sendMessage(context, type, data = {}) {
-    controllerSocket.current.send(JSON.stringify({ context, type, data }))
+    if (websocket) {
+      controllerSocket.current.send(JSON.stringify({ context, type, data }))
+    }
   }
 
   // Handle inbound messages
@@ -314,7 +329,6 @@ function App() {
               // console.log(data.error)
               // console.log('Invitations Error')
               setErrorMessage(data.error)
-
               break
 
             default:
@@ -365,7 +379,6 @@ function App() {
               // console.log(data.error)
               // console.log('Contacts Error')
               setErrorMessage(data.error)
-
               break
 
             default:
@@ -380,15 +393,28 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              // console.log(data.error)
-              // console.log('Demographics Error')
               setErrorMessage(data.error)
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
+        case 'OUT_OF_BAND':
+          switch (type) {
+            case 'INVITATION':
+              setQRCodeURL(data.invitation_record)
 
               break
 
-            case 'CONTACTS_ERROR':
-              // console.log(data.error)
-              // console.log('CONTACTS ERROR')
+            case 'INVITATIONS_ERROR':
+              console.log(data.error)
+              console.log('Invitations Error')
               setErrorMessage(data.error)
 
               break
@@ -405,29 +431,32 @@ function App() {
         case 'ROLES':
           switch (type) {
             case 'ROLES':
-              let oldRoles = roles
-              let newRoles = data.roles
-              let updatedRoles = []
-              // (mikekebert) Loop through the new roles and check them against the existing array
-              newRoles.forEach((newRole) => {
-                oldRoles.forEach((oldRole, index) => {
-                  if (
-                    oldRole !== null &&
-                    newRole !== null &&
-                    oldRole.role_id === newRole.role_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldRoles.splice(index, 1)
-                  }
+              setRoles((prevRoles) => {
+                let oldRoles = prevRoles
+                let newRoles = data.roles
+                let updatedRoles = []
+                // (mikekebert) Loop through the new roles and check them against the existing array
+                newRoles.forEach((newRole) => {
+                  oldRoles.forEach((oldRole, index) => {
+                    if (
+                      oldRole !== null &&
+                      newRole !== null &&
+                      oldRole.role_id === newRole.role_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldRoles.splice(index, 1)
+                    }
+                  })
+                  updatedRoles.push(newRole)
                 })
-                updatedRoles.push(newRole)
-              })
-              // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
-              if (oldRoles.length > 0)
-                updatedRoles = [...updatedRoles, ...oldRoles]
+                // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
+                if (oldRoles.length > 0)
+                  updatedRoles = [...updatedRoles, ...oldRoles]
 
-              setRoles(updatedRoles)
+                return updatedRoles
+              })
               removeLoadingProcess('ROLES')
+
               break
 
             default:
@@ -442,32 +471,34 @@ function App() {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              let oldUsers = users
-              let newUsers = data.users
-              let updatedUsers = []
-              // (mikekebert) Loop through the new users and check them against the existing array
-              newUsers.forEach((newUser) => {
-                oldUsers.forEach((oldUser, index) => {
-                  if (
-                    oldUser !== null &&
-                    newUser !== null &&
-                    oldUser.user_id === newUser.user_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldUsers.splice(index, 1)
-                  }
+              setUsers((prevUsers) => {
+                let oldUsers = prevUsers
+                let newUsers = data.users
+                let updatedUsers = []
+                // (mikekebert) Loop through the new users and check them against the existing array
+                newUsers.forEach((newUser) => {
+                  oldUsers.forEach((oldUser, index) => {
+                    if (
+                      oldUser !== null &&
+                      newUser !== null &&
+                      oldUser.user_id === newUser.user_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldUsers.splice(index, 1)
+                    }
+                  })
+                  updatedUsers.push(newUser)
                 })
-                updatedUsers.push(newUser)
-              })
-              // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-              if (oldUsers.length > 0)
-                updatedUsers = [...updatedUsers, ...oldUsers]
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedUsers.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
+                if (oldUsers.length > 0)
+                  updatedUsers = [...updatedUsers, ...oldUsers]
+                // (mikekebert) Sort the array by data created, newest on top
+                updatedUsers.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
-              setUsers(updatedUsers)
+                return updatedUsers
+              })
               removeLoadingProcess('USERS')
 
               break
@@ -478,53 +509,56 @@ function App() {
               break
 
             case 'USER_UPDATED':
-              setUsers(
-                users.map((x) =>
+              setUsers((prevUsers) => {
+                return prevUsers.map((x) =>
                   x.user_id === data.updatedUser.user_id ? data.updatedUser : x
                 )
-              )
+              })
               setUser(data.updatedUser)
+
               break
 
             case 'PASSWORD_UPDATED':
-              // (Eldersonar) Replace the user with the updated user based on password)
-              console.log('PASSWORD UPDATED')
-              setUsers(
-                users.map((x) =>
+              // (eldersonar) Replace the user with the updated user based on password)
+              setUsers((prevUsers) => {
+                return prevUsers.map((x) =>
                   x.user_id === data.updatedUserPassword.user_id
                     ? data.updatedUserPassword
                     : x
                 )
-              )
+              })
+
               break
 
             case 'USER_CREATED':
-              let newUser = data.user[0]
-              let oldUsers2 = users
-              oldUsers2.push(newUser)
-              setUsers(oldUsers2)
+              setUsers((prevUsers) => {
+                let updatedUsers = [...prevUsers, data.user[0]]
+                return updatedUsers.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+              })
               setUser(data.user[0])
+
               break
 
             case 'USER_DELETED':
-              // console.log('USER DELETED')
-              const index = users.findIndex((v) => v.user_id === data)
-              let alteredUsers = [...users]
-              alteredUsers.splice(index, 1)
-              setUsers(alteredUsers)
+              setUsers((prevUsers) => {
+                const index = prevUsers.findIndex((v) => v.user_id === data)
+                let alteredUsers = [...prevUsers]
+                alteredUsers.splice(index, 1)
+                return alteredUsers
+              })
 
               break
 
             case 'USER_ERROR':
               // console.log('User Error', data.error)
               setErrorMessage(data.error)
-
               break
 
             case 'USER_SUCCESS':
               // console.log('USER SUCCESS')
               setSuccessMessage(data)
-
               break
 
             default:
@@ -539,44 +573,50 @@ function App() {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-              let oldCredentials = credentials
-              let newCredentials = data.credential_records
-              let updatedCredentials = []
-              // (mikekebert) Loop through the new credentials and check them against the existing array
-              newCredentials.forEach((newCredential) => {
-                oldCredentials.forEach((oldCredential, index) => {
+              setCredentials((prevCred) => {
+                let oldCredentials = prevCred
+                let newCredentials = data.credential_records
+                let updatedCredentials = []
+                // (mikekebert) Loop through the new credentials and check them against the existing array
+                newCredentials.forEach((newCredential) => {
+                  oldCredentials.forEach((oldCredential, index) => {
+                    if (
+                      oldCredential !== null &&
+                      newCredential !== null &&
+                      oldCredential.credential_exchange_id ===
+                        newCredential.credential_exchange_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldCredentials.splice(index, 1)
+                    }
+                  })
+                  updatedCredentials.push(newCredential)
+                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
                   if (
-                    oldCredential !== null &&
-                    newCredential !== null &&
-                    oldCredential.credential_exchange_id ===
-                    newCredential.credential_exchange_id
+                    newCredential.connection_id === pendingEmployeeConnectionID
                   ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldCredentials.splice(index, 1)
+                    setPendingEmployeeConnectionID('')
+                  }
+                  if (
+                    newCredential.connection_id ===
+                    pendingVaccinationConnectionID
+                  ) {
+                    setPendingVaccinationConnectionID('')
                   }
                 })
-                updatedCredentials.push(newCredential)
-                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                if (
-                  newCredential.connection_id === pendingEmployeeConnectionID
-                ) {
-                  setPendingEmployeeConnectionID('')
-                }
-                if (
-                  newCredential.connection_id === pendingVaccinationConnectionID
-                ) {
-                  setPendingVaccinationConnectionID('')
-                }
-              })
-              // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
-              if (oldCredentials.length > 0)
-                updatedCredentials = [...updatedCredentials, ...oldCredentials]
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedCredentials.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
+                if (oldCredentials.length > 0)
+                  updatedCredentials = [
+                    ...updatedCredentials,
+                    ...oldCredentials,
+                  ]
+                // (mikekebert) Sort the array by data created, newest on top
+                updatedCredentials.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
-              setCredentials(updatedCredentials)
+                return updatedCredentials
+              })
               removeLoadingProcess('CREDENTIALS')
               break
 
@@ -584,7 +624,6 @@ function App() {
               // console.log(data.error)
               // console.log('Credentials Error')
               setErrorMessage(data.error)
-
               break
 
             default:
@@ -607,6 +646,58 @@ function App() {
 
               break
 
+            case 'PRESENTATION_REPORTS':
+              setPresentationReports((prevPresentations) => {
+                let oldPresentations = prevPresentations
+                let newPresentations = data.presentation_reports
+                let updatedPresentations = []
+
+                // (mikekebert) Loop through the new presentation and check them against the existing array
+                newPresentations.forEach((newPresentation) => {
+                  oldPresentations.forEach((oldPresentation, index) => {
+                    if (
+                      oldPresentation !== null &&
+                      newPresentation !== null &&
+                      oldPresentation.presentation_exchange_id ===
+                        newPresentation.presentation_exchange_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      console.log('splice', oldPresentation)
+                      oldPresentations.splice(index, 1)
+                    }
+                  })
+                  updatedPresentations.push(newPresentation)
+                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                  if (
+                    newPresentation.connection_id ===
+                    pendingEmployeeConnectionID
+                  ) {
+                    setPendingEmployeeConnectionID('')
+                  }
+                  if (
+                    newPresentation.connection_id ===
+                    pendingVaccinationConnectionID
+                  ) {
+                    setPendingVaccinationConnectionID('')
+                  }
+                })
+                // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
+                if (oldPresentations.length > 0)
+                  updatedPresentations = [
+                    ...updatedPresentations,
+                    ...oldPresentations,
+                  ]
+                // (mikekebert) Sort the array by date created, newest on top
+                updatedPresentations.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+
+                return updatedPresentations
+              })
+              removeLoadingProcess('PRESENTATIONS')
+
+              break
+
             default:
               setNotification(
                 `Error - Unrecognized Websocket Message Type: ${type}`,
@@ -614,7 +705,21 @@ function App() {
               )
               break
           }
+          break
 
+        case 'SERVER':
+          switch (type) {
+            case 'WEBSOCKET_READY':
+              setReadyForMessages(true)
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
           break
 
         case 'SETTINGS':
@@ -638,9 +743,14 @@ function App() {
               break
 
             case 'SETTINGS_ORGANIZATION':
-              setOrganizationName(data.companyName)
+              setOrganizationName(data.organizationName)
               setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
+              break
+
+            case 'SETTINGS_SMTP':
+              setSmtp(data.value)
+              removeLoadingProcess('SMTP')
               break
 
             case 'SETTINGS_ERROR':
@@ -670,7 +780,7 @@ function App() {
               break
 
             case 'IMAGES_ERROR':
-              console.log('Images Error:', data.error)
+              // console.log('Images Error:', data.error)
               setErrorMessage(data.error)
               break
 
@@ -681,6 +791,33 @@ function App() {
               )
               break
           }
+          break
+
+        case 'GOVERNANCE':
+          switch (type) {
+            case 'PRIVILEGES_ERROR':
+              console.log(data)
+              console.log('Privileges Error', data.error)
+              setErrorMessage(data.error)
+              removeLoadingProcess('GOVERNANCE')
+              break
+
+            case 'PRIVILEGES_SUCCESS':
+              console.log('PRIVILEGES SUCCESS')
+              console.log('these are the privileges:')
+              console.log(data.privileges)
+              setPrivileges(data.privileges)
+              removeLoadingProcess('GOVERNANCE')
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+
           break
 
         default:
@@ -697,22 +834,21 @@ function App() {
   }
 
   function addLoadingProcess(process) {
-    loadingArray.push(process)
+    loadingList.push(process)
   }
 
   function clearLoadingProcess() {
-    loadingArray = []
+    loadingList = []
     setAppIsLoaded(true)
   }
 
   function removeLoadingProcess(process) {
-    const index = loadingArray.indexOf(process)
-
+    const index = loadingList.indexOf(process)
     if (index > -1) {
-      loadingArray.splice(index, 1)
+      loadingList.splice(index, 1)
     }
 
-    if (loadingArray.length === 0) {
+    if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
   }
@@ -726,7 +862,7 @@ function App() {
 
   // Update theme state locally
   const updateTheme = (update) => {
-    return setTheme({ ...theme, ...update })
+    return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
   }
 
   // Update theme in the database
@@ -757,7 +893,7 @@ function App() {
       for (let key in defaultTheme)
         if ((key = undoKey)) {
           const undo = { [`${key}`]: defaultTheme[key] }
-          return setTheme({ ...theme, ...undo })
+          return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
         }
     }
   }
@@ -924,6 +1060,10 @@ function App() {
                           <Home
                             loggedInUserState={loggedInUserState}
                             sendRequest={sendMessage}
+                            privileges={privileges}
+                            successMessage={successMessage}
+                            errorMessage={errorMessage}
+                            clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                           />
                         </Main>
@@ -1008,10 +1148,13 @@ function App() {
                               loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
+                              privileges={privileges}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
+                              clearResponseState={clearResponseState}
                               contactId={match.params.contactId}
                               contacts={contacts}
                               credentials={credentials}
-                              schemas={schemas}
                             />
                           </Main>
                         </Frame>
@@ -1068,6 +1211,7 @@ function App() {
                               history={history}
                               credential={match.params.credentialId}
                               credentials={credentials}
+                              schemas={schemas}
                             />
                           </Main>
                         </Frame>
@@ -1119,6 +1263,67 @@ function App() {
                       </Frame>
                     )
                   }}
+                />
+                <Route
+                  path="/presentations"
+                  exact
+                  render={({ match, history }) => {
+                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                      return (
+                        <Frame id="app-frame">
+                          <AppHeader
+                            loggedInUserState={loggedInUserState}
+                            loggedInUsername={loggedInUsername}
+                            logo={image}
+                            organizationName={organizationName}
+                            match={match}
+                            history={history}
+                            handleLogout={handleLogout}
+                          />
+                          <Main>
+                            <Presentations
+                              history={history}
+                              presentationReports={presentationReports}
+                              contacts={contacts}
+                            />
+                          </Main>
+                        </Frame>
+                      )
+                    } else {
+                      return <Route render={() => <Redirect to="/" />} />
+                    }
+                  }}
+                />
+                <Route
+                  path={`/presentations/:presentationId`}
+                  render={({ match, history }) => {
+                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                      return (
+                        <Frame id="app-frame">
+                          <AppHeader
+                            loggedInUserState={loggedInUserState}
+                            loggedInUsername={loggedInUsername}
+                            logo={image}
+                            organizationName={organizationName}
+                            match={match}
+                            history={history}
+                            handleLogout={handleLogout}
+                          />
+                          <Main>
+                            <Presentation
+                              history={history}
+                              presentation={match.params.presentationId}
+                              presentationReports={presentationReports}
+                              contacts={contacts}
+                            />
+                          </Main>
+                        </Frame>
+                      )
+                    } else {
+                      return <Route render={() => <Redirect to="/" />} />
+                    }
+                  }}
+                  presentationReports={presentationReports}
                 />
                 <Route
                   path="/users"
@@ -1205,6 +1410,7 @@ function App() {
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
+                              smtp={smtp}
                             />
                           </Main>
                         </Frame>

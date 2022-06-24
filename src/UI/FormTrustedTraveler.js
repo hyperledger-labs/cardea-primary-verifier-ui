@@ -148,7 +148,7 @@ function FormTrustedTraveler(props) {
 
     let attributes = {}
     if (props.contactSelected) {
-      // const demographics = props.contactSelected.Demographic
+      // const traveler = props.contactSelected.Traveler
       // const passport = props.contactSelected.Passport
 
       attributes = [

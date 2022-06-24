@@ -63,8 +63,6 @@ const StyledSubLink = styled(NavLink)`
 function AppMenu(props) {
   const localUser = props.loggedInUserState
 
-  console.log(localUser)
-
   let pathMatch = ''
   if (props.match.path !== undefined) {
     pathMatch = props.match.path
@@ -116,6 +114,19 @@ function AppMenu(props) {
                 className={pathMatch === '/credentials' ? 'active' : undefined}
               >
                 <StyledLink to="/credentials">Credentials</StyledLink>
+              </Item>
+            )}
+          />
+          <CanUser
+            user={localUser}
+            perform="presentations:read"
+            yes={() => (
+              <Item
+                className={
+                  pathMatch === '/presentations' ? 'active' : undefined
+                }
+              >
+                <StyledLink to="/presentations">Presentations</StyledLink>
               </Item>
             )}
           />

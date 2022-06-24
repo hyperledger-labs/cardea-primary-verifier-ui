@@ -66,7 +66,7 @@ function ForgotPassword(props) {
       } else {
         setUser(res.data)
         setNotification(
-          `If this user exists, a password reset email has been sent`,
+          `If this user exists, a password reset email has been sent.`,
           'notice'
         )
         props.history.push('/')
