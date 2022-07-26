@@ -165,9 +165,9 @@ function FormContacts(props) {
     passport.type = form.get('type')
     passport.issuing_country = form.get('issuing_country')
     passport.authority = form.get('authority')
-    passport.photo = props.contactSelected.Passport.photo
+    passport.photo = props.contactSelected.Passport ? (props.contactSelected.Passport.photo
       ? props.contactSelected.Passport.photo.data
-      : ''
+      : '') : ''
 
     props.submitPassport(passport, e)
 
