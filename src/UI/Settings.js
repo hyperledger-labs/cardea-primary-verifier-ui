@@ -468,12 +468,14 @@ function Settings(props) {
           <H3>Organization Name</H3>
           <BlockInput
             name="organizationName"
+            placeholder="Acme Co."
             defaultValue={props.organizationName ? props.organizationName : ''}
             ref={organizationName}
           />
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
+            placeholder="Acme Co."
             defaultValue={props.siteTitle ? props.siteTitle : ''}
             ref={siteTitle}
           />
