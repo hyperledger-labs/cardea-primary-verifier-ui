@@ -465,14 +465,18 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={organizationForm}>
+          <H3>Organization Name</H3>
           <BlockInput
             name="organizationName"
-            placeholder="Organization Name"
+            placeholder="Acme Co."
+            defaultValue={props.organizationName ? props.organizationName : ''}
             ref={organizationName}
           />
+          <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
-            placeholder="Website Title"
+            placeholder="Acme Co."
+            defaultValue={props.siteTitle ? props.siteTitle : ''}
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>
