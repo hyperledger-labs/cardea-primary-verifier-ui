@@ -1206,6 +1206,7 @@ function App() {
                             logo={image}
                             organizationName={organizationName}
                             match={match}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Credential
@@ -1371,6 +1372,7 @@ function App() {
                           logo={image}
                           organizationName={organizationName}
                           match={match}
+                          handleLogout={handleLogout}
                         />
                         <Main>
                           <User
@@ -1412,6 +1414,8 @@ function App() {
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
                               smtp={smtp}
+                              organizationName={organizationName}
+                              siteTitle={siteTitle}
                             />
                           </Main>
                         </Frame>
