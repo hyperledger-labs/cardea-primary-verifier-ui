@@ -42,7 +42,7 @@ function FormInvitationAccept(props) {
     }
 
     closeModal()
-    window.location.reload()
+    // window.location.reload()
   }
 
   return (
