@@ -237,8 +237,6 @@ function Settings(props) {
       !form.get('host') ||
       !form.get('mailUsername') ||
       !form.get('email')
-      // ||
-      // !form.get('password')
     ) {
       setNotification(
         'Host, Mail Username, User Email and Password are required fields. See the tooltip for more info',
@@ -248,8 +246,6 @@ function Settings(props) {
       const smtpConfigs = {
         host: form.get('host'),
         port: form.get('port'),
-        // mailer: form.get('mailer'),
-        // mailFromName: form.get('mailFromName'),
         encryption: form.get('encryption'),
         auth: {
           email: form.get('email'),
