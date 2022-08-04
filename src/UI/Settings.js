@@ -709,16 +709,6 @@ function Settings(props) {
             The SMTP configuration is used for sending
             <br />
             new user and password reset emails.
-            <br />
-            <br />
-            Default gmail SMTP configuration uses only
-            <br />
-            host, user email and user password.
-            <br />
-            <br />
-            For another provider, please refer to
-            <br />
-            its official documentation.
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={smtpForm}>
@@ -738,6 +728,7 @@ function Settings(props) {
           >
             <span>
               This is the hostname or IP address to connect to.
+              <br />
               <br />
               Required field.
             </span>
@@ -767,6 +758,7 @@ function Settings(props) {
               For Gmail accounts mail username must be the same as the user
               email.
               <br />
+              <br />
               Required field.
             </span>
           </ReactTooltip>
@@ -793,6 +785,7 @@ function Settings(props) {
           >
             <span>
               This is the user email address.
+              <br />
               <br />
               Required field.
             </span>
@@ -823,6 +816,7 @@ function Settings(props) {
               <br />
               For Gmail SMTP cofiguration use the APP Password.
               <br />
+              <br />
               Optional field.
             </span>
           </ReactTooltip>
@@ -850,6 +844,7 @@ function Settings(props) {
               This is the port to connect to.
               <br />
               It defaults to 587 if "secure" is false or 465 if true.
+              <br />
               <br />
               Optional field.
             </span>
@@ -879,6 +874,7 @@ function Settings(props) {
               <br />
               If false (the default) then TLS is used if server supports the
               STARTTLS extension.
+              <br />
               <br />
               Optional field.
             </span>
