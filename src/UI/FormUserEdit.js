@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   Actions,
@@ -20,10 +21,16 @@ import {
 import { useNotification } from './NotificationProvider'
 
 function FormUserEdit(props) {
+  const loginState = useSelector((state) => state.login)
+  const usersState = useSelector((state) => state.users)
+
   const email = props.userEmail
-  const roles = props.roles
-  const users = props.users
-  const loggedInUserState = props.loggedInUserState
+  const roles = usersState.roles
+  const users = usersState.users
+  const loggedInUserState = loginState.loggedInUserState
+  // const roles = props.roles
+  // const users = props.users
+  // const loggedInUserState = props.loggedInUserState
   const error = props.error
 
   // Get the selected user

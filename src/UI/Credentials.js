@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 // import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
@@ -10,6 +11,8 @@ function Credentials(props) {
   // Accessing notification context
   // const setNotification = useNotification()
 
+  const credentialsState = useSelector((state) => state.credentials)
+
   function openCredential(history, id) {
     if (history !== undefined) {
       history.push('/credentials/' + id)
@@ -17,8 +20,8 @@ function Credentials(props) {
   }
 
   const history = props.history
-
-  const credentials = props.credentials
+  const credentials = credentialsState.credentials
+  // const credentials = props.credentials
 
   const credentialRows = credentials.map((credential_record) => {
     const credential_id = credential_record.credential_exchange_id

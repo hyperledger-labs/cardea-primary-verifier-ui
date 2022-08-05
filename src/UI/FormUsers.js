@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import { useTheme } from 'styled-components'
 
@@ -24,9 +25,12 @@ import { IconHelp } from './CommonStylesTables'
 import ReactTooltip from 'react-tooltip'
 
 function FormUsers(props) {
+  const usersState = useSelector((state) => state.users)
+  const roles = usersState.roles
+
   const [options, setOptions] = useState([])
 
-  const roles = props.roles
+  // const roles = props.roles
   const error = props.error
 
   const userForm = useRef()

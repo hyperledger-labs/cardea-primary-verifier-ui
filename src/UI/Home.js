@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
+import { clearNotificationState } from '../redux/notificationsReducer'
 import styled from 'styled-components'
 
 import FormQR from './FormQR'
@@ -37,13 +39,23 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
-  const error = props.errorMessage
-  const success = props.successMessage
-  const warning = props.warningMessage
-  const localUser = props.loggedInUserState
+  const contactsState = useSelector((state) => state.contacts)
+  const notificationsState = useSelector((state) => state.notifications)
+
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+  const contact = contactsState.contact
+
+  const dispatch = useDispatch()
+
+  // const error = props.errorMessage
+  // const success = props.successMessage
+  // const warning = props.warningMessage
+  // const localUser = props.loggedInUserState
   const privileges = props.privileges
 
-  const [govGranted, setGovGranted] = useState(undefined)
+  // const [govGranted, setGovGranted] = useState(undefined)
 
   const [index, setIndex] = useState(false)
 
@@ -63,17 +75,15 @@ function Home(props) {
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
-      setIndex(index + 1)
+      dispatch(clearNotificationState())
     } else if (warning) {
       setNotification(warning, 'warning')
-      props.clearResponseState()
-      setIndex(index + 1)
+      dispatch(clearNotificationState())
     } else return
-  }, [error, success, warning])
+  }, [error, success, warning, setNotification])
 
   // // Get governance privileges
   // useEffect(() => {
@@ -113,7 +123,7 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -122,7 +132,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -131,7 +141,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -140,7 +150,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>

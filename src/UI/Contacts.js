@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 // import FormContacts from './FormContacts'
 import FormQR from './FormQR'
-import { useNotification } from './NotificationProvider'
+// import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
 
@@ -13,10 +14,13 @@ import { ActionButton } from './CommonStylesForms'
 import { CanUser } from './CanUser'
 
 function Contacts(props) {
-  const localUser = props.loggedInUserState
+  // const localUser = props.loggedInUserState
 
   // Accessing notification context
   // const setNotification = useNotification()
+
+  const contactsState = useSelector((state) => state.contacts)
+  const contacts = contactsState.contacts
 
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
 
@@ -36,7 +40,7 @@ function Contacts(props) {
 
   const history = props.history
 
-  const contacts = props.contacts
+  // const contacts = props.contacts
 
   const contactRows = contacts.map((contact) => {
     return (
@@ -76,7 +80,7 @@ function Contacts(props) {
           </DataTable>
         </PageSection>
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <ActionButton

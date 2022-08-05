@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { DateTime } from 'luxon'
+import { useSelector } from 'react-redux'
+// import { DateTime } from 'luxon'
 
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
@@ -7,9 +8,11 @@ import PageSection from './PageSection.js'
 import { AttributeTable, AttributeRow } from './CommonStylesTables'
 
 function Credential(props) {
-  const history = props.history
+  const credentialsState = useSelector((state) => state.credentials)
+  // const history = props.history
   const credential = props.credential
-  const credentials = props.credentials
+  // const credentials = props.credentials
+  const credentials = credentialsState.credentials
 
   let credentialSelected = ''
   let attributesArray = ''

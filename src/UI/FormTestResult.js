@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   StyledPopup,
@@ -17,76 +18,71 @@ import {
 } from './CommonStylesForms'
 
 function FormTestResult(props) {
+  const contactsState = useSelector((state) => state.contacts)
+  const contactSelected = contactsState.contactSelected
+
   const credentialForm = useRef(null)
 
   const surname =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.surname))
       : ''
   const given_names =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.given_names))
       : ''
   const date_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.date_of_birth))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.date_of_birth))
       : ''
   const sex =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.sex))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.sex))
       : ''
   const address_1 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_1)
+          JSON.stringify(contactSelected.Demographic.address.address_1)
         )
       : ''
   const address_2 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_2)
+          JSON.stringify(contactSelected.Demographic.address.address_2)
         )
       : ''
   const address_null = address_2 === null ? '' : address_2
   const city =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.city)
-        )
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.address.city))
       : ''
   const state =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.state)
-        )
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.address.state))
       : ''
   const zip_code =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.zip_code)
-        )
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.address.zip_code))
       : ''
   const country =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.country)
-        )
+    contactSelected &&
+    contactSelected.Demographic &&
+    contactSelected.Demographic.address
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.address.country))
       : ''
   const phone =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.phone))
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.phone))
       : ''
 
   const handleSubmit = (e) => {
@@ -95,12 +91,12 @@ function FormTestResult(props) {
 
     let attributes = {}
     if (
-      props.contactSelected &&
-      props.contactSelected.Demographic &&
-      props.contactSelected.Passport
+      contactSelected &&
+      contactSelected.Demographic &&
+      contactSelected.Passport
     ) {
-      const demographics = props.contactSelected.Demographic
-      const passport = props.contactSelected.Passport
+      const demographics = contactSelected.Demographic
+      const passport = contactSelected.Passport
 
       attributes = [
         {
@@ -221,7 +217,7 @@ function FormTestResult(props) {
       ]
     }
     let newCredential = {
-      connectionID: props.contactSelected.Connections[0].connection_id,
+      connectionID: contactSelected.Connections[0].connection_id,
       schemaID: 'RuuJwd3JMffNwZ43DcJKN1:2:Lab_Result:1.4',
       schemaVersion: '1.4',
       schemaName: 'Lab_Result',

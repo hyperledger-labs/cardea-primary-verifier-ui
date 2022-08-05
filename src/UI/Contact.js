@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { setContactSelected } from '../redux/contactsReducer'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled from 'styled-components'
 
@@ -41,46 +44,85 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
-  const localUser = props.loggedInUserState
+  // const localUser = props.loggedInUserState
+  const dispatch = useDispatch()
+  const contactsState = useSelector((state) => state.contacts)
+  const credentialsState = useSelector((state) => state.credentials)
+  const notificationsState = useSelector((state) => state.notifications)
+
+  const contacts = contactsState.contacts
+  const credentials = credentialsState.credentials
+  const contactSelected = contactsState.contactSelected
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
 
   // Accessing notification context
   const setNotification = useNotification()
 
   const history = props.history
   const contactId = props.contactId
-  const error = props.errorMessage
-  const success = props.successMessage
+  // const error = props.errorMessage
+  // const success = props.successMessage
   const privileges = props.privileges
-  const credentials = props.credentials
-  const contacts = props.contacts
+  // const credentials = props.credentials
+  // const contacts = props.contacts
 
-  // console.log(credentials)
+  let contactToSelect = ''
+
+  // Modal state
+  const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
+  const [travelerModalIsOpen, setTravelerModalIsOpen] = useState(false)
+  const [credentialModalIsOpen, setCredentialModalIsOpen] = useState(false)
+
+  const closeContactModal = () => setContactModalIsOpen(false)
+  const closeTravelerModal = () => setTravelerModalIsOpen(false)
+
+  if (contacts) {
+    for (let i = 0; i < contacts.length; i++) {
+      if (contacts[i].contact_id === Number(contactId)) {
+        contactToSelect = contacts[i]
+        break
+      }
+    }
+  }
 
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
-      setIndex(index + 1)
-    }
-  }, [error, success])
+      dispatch(clearNotificationState())
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+    } else return
+  }, [error, success, warning, setNotification, dispatch])
+
+  // useEffect(() => {
+  //   if (success) {
+  //     setNotification(success, 'notice')
+  //     props.clearResponseState()
+  //   } else if (error) {
+  //     setNotification(error, 'error')
+  //     props.clearResponseState()
+  //     setIndex(index + 1)
+  //   }
+  // }, [error, success])
 
   const isMounted = useRef(null)
 
-  const [index, setIndex] = useState(false)
+  // const [index, setIndex] = useState(false)
 
-  let contactToSelect = ''
-
-  useEffect(() => {
-    for (let i = 0; i < props.contacts.length; i++) {
-      if (props.contacts[i].contact_id == contactId) {
-        setContactSelected(props.contacts[i])
-        break
-      }
-    }
-  }, [contacts, credentials])
+  // useEffect(() => {
+  //   for (let i = 0; i < props.contacts.length; i++) {
+  //     if (props.contacts[i].contact_id == contactId) {
+  //       setContactSelected(props.contacts[i])
+  //       break
+  //     }
+  //   }
+  // }, [contacts, credentials])
 
   // Get governance privileges
   useEffect(() => {
@@ -90,6 +132,10 @@ function Contact(props) {
       isMounted.current = false
     }
   }, [])
+
+  useEffect(() => {
+    dispatch(setContactSelected(contactToSelect))
+  }, [contactToSelect, dispatch])
 
   // useEffect(() => {
   //   setContactSelected(contactToSelect)
@@ -104,15 +150,7 @@ function Contact(props) {
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
 
-  // Modal state
-  const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
-  const [travelerModalIsOpen, setTravelerModalIsOpen] = useState(false)
-  const [credentialModalIsOpen, setCredentialModalIsOpen] = useState(false)
-
-  const closeContactModal = () => setContactModalIsOpen(false)
-  const closeTravelerModal = () => setTravelerModalIsOpen(false)
-
-  const [contactSelected, setContactSelected] = useState(contactToSelect)
+  // const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   let travelerData = ''
   let passportData = ''
@@ -267,7 +305,7 @@ function Contact(props) {
 
     setNotification('Demographic info was updated!', 'notice')
 
-    setContactSelected({ ...contactSelected, ...Demographic })
+    dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
   }
 
   function updatePasport(updatedPassport, e) {
@@ -280,7 +318,7 @@ function Contact(props) {
 
     setNotification('Passport info was updated!', 'notice')
 
-    setContactSelected({ ...contactSelected, ...Passport })
+    dispatch(setContactSelected({ ...contactSelected, ...Passport }))
   }
 
   function beginIssuance(type) {
@@ -296,6 +334,8 @@ function Contact(props) {
   function submitNewCredential(newCredential, e) {
     e.preventDefault()
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
+
+    setNotification('Credential offer was successfully sent!', 'notice')
   }
 
   let credentialRows = null
@@ -346,7 +386,7 @@ function Contact(props) {
         />
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="contacts:update"
             yes={() => (
               <EditContact onClick={() => setContactModalIsOpen((o) => !o)}>
@@ -448,7 +488,7 @@ function Contact(props) {
         </PageSection>
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -531,14 +571,14 @@ function Contact(props) {
           </DataTable>
         </PageSection>
         <FormContacts
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
           submitDemographics={updateDemographics}
           submitPassport={updatePasport}
         />
         <FormTrustedTraveler
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           travelerModalIsOpen={travelerModalIsOpen}
           closeCredentialModal={closeTravelerModal}
           submitCredential={submitNewCredential}
