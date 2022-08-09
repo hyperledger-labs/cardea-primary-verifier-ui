@@ -18,7 +18,7 @@ function Credential(props) {
   let attributesArray = ''
 
   for (let i = 0; i < credentials.length; i++) {
-    if (credentials[i].credential_exchange_id == credential) {
+    if (credentials[i].credential_exchange_id === credential) {
       credentialSelected = credentials[i]
       attributesArray =
         credentialSelected.credential_proposal_dict.credential_proposal
@@ -55,10 +55,10 @@ function Credential(props) {
       new Date(credentialSelected.created_at).toISOString().substring(0, 10) ||
       ''
     patient_given = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'traveler_given_names') return attribute
+      if (attribute.name === 'traveler_given_names') return attribute
     })
     patient_sur = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'traveler_surnames') return attribute
+      if (attribute.name === 'traveler_surnames') return attribute
     })
     patient_name = patient_given.value + ' ' + patient_sur.value
     // Values that depend on the credential being issued

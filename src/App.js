@@ -2,6 +2,7 @@ import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import {
   BrowserRouter as Router,
@@ -37,6 +38,52 @@ import User from './UI/User'
 import Users from './UI/Users'
 
 import SessionProvider from './UI/SessionProvider'
+import { handleImageSrc } from '../src/UI/util'
+
+// Redux reducers imports
+import store from './store'
+
+import {
+  setLoggedIn,
+  setLoggedInUserId,
+  setLoggedInUsername,
+  setLoggedInRoles,
+  setLoggedInUserState,
+  logoutUser,
+} from './redux/loginReducer'
+import {
+  setContacts,
+  setContact,
+  clearContactstate,
+} from './redux/contactsReducer'
+import {
+  setCredentials,
+  setCredential,
+  clearCredentialsState,
+} from './redux/credentialsReducer'
+import {
+  setLogo,
+  setOrganizationName,
+  setSiteTitle,
+  setSmtp,
+  setTheme,
+  setSchemas,
+  clearSettingsState,
+} from './redux/settingsReducer'
+import {
+  setPresentationReports,
+  clearPresentationsState,
+} from './redux/presentationsReducer'
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from './redux/notificationsReducer'
+import {
+  setUsers,
+  setUser,
+  setRoles,
+  clearUsersState,
+} from './redux/usersReducer'
 
 import './App.css'
 
@@ -51,20 +98,32 @@ const Main = styled.main`
 `
 
 function App() {
-  const defaultTheme = {
-    primary_color: '#407CD4',
-    secondary_color: '#40ADD4',
-    neutral_color: '#091C40',
-    negative_color: '#ed003c',
-    warning_color: '#e49b13',
-    positive_color: '#008a00',
-    text_color: '#555',
-    text_light: '#fff',
-    border: '#e3e3e3',
-    drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
-    background_primary: '#fff',
-    background_secondary: '#f5f5f5',
+  let currentState
+  const loginState = useSelector((state) => state.login)
+  const settingsState = useSelector((state) => state.settings)
+  const theme = settingsState.theme
+  const siteTitle = settingsState.siteTitle
+
+  const dispatch = useDispatch()
+
+  const updateState = () => {
+    currentState = store.getState()
   }
+
+  // const defaultTheme = {
+  //   primary_color: '#407CD4',
+  //   secondary_color: '#40ADD4',
+  //   neutral_color: '#091C40',
+  //   negative_color: '#ed003c',
+  //   warning_color: '#e49b13',
+  //   positive_color: '#008a00',
+  //   text_color: '#555',
+  //   text_light: '#fff',
+  //   border: '#e3e3e3',
+  //   drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
+  //   background_primary: '#fff',
+  //   background_secondary: '#f5f5f5',
+  // }
 
   const cookies = new Cookies()
 
@@ -84,37 +143,37 @@ function App() {
   const [appIsLoaded, setAppIsLoaded] = useState(false)
 
   // Check for local state copy of theme, otherwise use default hard coded here in App.js
-  const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
-  const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
-  const [schemas, setSchemas] = useState({})
+  // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
+  // const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
+  // const [schemas, setSchemas] = useState({})
 
   // Styles to change array
   const [stylesArray, setStylesArray] = useState([])
 
   // Message states
-  const [contacts, setContacts] = useState([])
-  const [credentials, setCredentials] = useState([])
-  const [presentationReports, setPresentationReports] = useState([])
-  const [image, setImage] = useState()
-  const [roles, setRoles] = useState([])
-  const [users, setUsers] = useState([])
-  const [user, setUser] = useState({})
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
-  const [organizationName, setOrganizationName] = useState(null)
-  const [smtp, setSmtp] = useState(null)
+  // const [contacts, setContacts] = useState([])
+  // const [credentials, setCredentials] = useState([])
+  // const [presentationReports, setPresentationReports] = useState([])
+  // const [image, setImage] = useState()
+  // const [roles, setRoles] = useState([])
+  // const [users, setUsers] = useState([])
+  // const [user, setUser] = useState({})
+  // const [errorMessage, setErrorMessage] = useState(null)
+  // const [successMessage, setSuccessMessage] = useState(null)
+  // const [organizationName, setOrganizationName] = useState(null)
+  // const [smtp, setSmtp] = useState(null)
 
-  const [siteTitle, setSiteTitle] = useState('')
+  // const [siteTitle, setSiteTitle] = useState('')
 
   const [privileges, setPrivileges] = useState([])
 
   // session states
   const [session, setSession] = useState('')
-  const [loggedInUserId, setLoggedInUserId] = useState('')
-  const [loggedInUserState, setLoggedInUserState] = useState(null)
-  const [loggedInUsername, setLoggedInUsername] = useState('')
-  const [loggedInRoles, setLoggedInRoles] = useState([])
-  const [loggedIn, setLoggedIn] = useState(false)
+  // const [loggedInUserId, setLoggedInUserId] = useState('')
+  // const [loggedInUserState, setLoggedInUserState] = useState(null)
+  // const [loggedInUsername, setLoggedInUsername] = useState('')
+  // const [loggedInRoles, setLoggedInRoles] = useState([])
+  // const [loggedIn, setLoggedIn] = useState(false)
   const [sessionTimer, setSessionTimer] = useState(60)
 
   const [QRCodeURL, setQRCodeURL] = useState('')
@@ -134,6 +193,20 @@ function App() {
 
   // Perform First Time Setup. Connect to Controller Server via Websockets
 
+  // Fetch the logo for unauthorized routes
+  const requestLogo = () => {
+    Axios({
+      method: 'GET',
+      url: '/api/logo',
+    }).then((res) => {
+      if (res.data.error) {
+        setNotification(res.data.error, 'error')
+      } else {
+        dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+      }
+    })
+  }
+
   // TODO: Setting logged-in user and session states on app mount
   useEffect(() => {
     Axios({
@@ -144,23 +217,23 @@ function App() {
         if (cookies.get('sessionId')) {
           // Update session expiration date
           setSession(cookies.get('sessionId'))
-          setLoggedIn(true)
-
-          setLoggedInUserState(res.data)
-          setLoggedInUserId(res.data.id)
-          setLoggedInUsername(res.data.username)
-          setLoggedInRoles(res.data.roles)
+          dispatch(setLoggedIn(true))
+          dispatch(setLoggedInUserState(res.data))
+          dispatch(setLoggedInUserId(res.data.id))
+          dispatch(setLoggedInUsername(res.data.username))
+          dispatch(setLoggedInRoles(res.data.roles))
         } else setAppIsLoaded(true)
       })
       .catch((error) => {
         // Unauthorized
+        requestLogo()
         setAppIsLoaded(true)
       })
-  }, [loggedIn])
+  }, [loginState.loggedIn])
 
   // Setting up websocket and controllerSocket
   useEffect(() => {
-    if (session && loggedIn) {
+    if (session && loginState.loggedIn) {
       let url = new URL('/api/ws', window.location.href)
       url.protocol = url.protocol.replace('http', 'ws')
       controllerSocket.current = new WebSocket(url.href)
@@ -193,7 +266,7 @@ function App() {
         )
       }
     }
-  }, [loggedIn, session])
+  }, [loginState.loggedIn, session])
 
   // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
   useEffect(() => {
@@ -205,10 +278,10 @@ function App() {
     // Run web sockets only if authenticated
     if (
       session &&
-      loggedIn &&
+      loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      loggedInUserState &&
+      loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
       sendMessage('SETTINGS', 'GET_THEME', {})
@@ -218,24 +291,28 @@ function App() {
       sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
       addLoadingProcess('GOVERNANCE')
 
-      if (check(rules, loggedInUserState, 'contacts:read', 'travelers:read')) {
+      // if (check(rules, loggedInUserState, 'contacts:read', 'travelers:read')) {
+      if (check('contacts:read', 'travelers:read')) {
         sendMessage('CONTACTS', 'GET_ALL', {
           additional_tables: ['Demographic', 'Passport'],
         })
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(rules, loggedInUserState, 'credentials:read')) {
+      // if (check(rules, loggedInUserState, 'credentials:read')) {
+      if (check('credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(rules, loggedInUserState, 'presentations:read')) {
+      // if (check(rules, loggedInUserState, 'presentations:read')) {
+      if (check('presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
 
-      if (check(rules, loggedInUserState, 'roles:read')) {
+      // if (check(rules, loggedInUserState, 'roles:read')) {
+      if (check('roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
@@ -243,7 +320,8 @@ function App() {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(rules, loggedInUserState, 'settings:update')) {
+      // if (check(rules, loggedInUserState, 'settings:update')) {
+      if (check('settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -251,12 +329,19 @@ function App() {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(rules, loggedInUserState, 'users:read')) {
+      // if (check(rules, loggedInUserState, 'users:read')) {
+      if (check('users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loggedIn, websocket, readyForMessages, loggedInUserState])
+  }, [
+    session,
+    loginState.loggedIn,
+    websocket,
+    readyForMessages,
+    loginState.loggedInUserState,
+  ])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -272,6 +357,9 @@ function App() {
 
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
+    //Update to current state
+    updateState()
+
     try {
       console.log(
         `New Message with context: '${context}' and type: '${type}' with data:`,
@@ -289,7 +377,7 @@ function App() {
 
             case 'WEBSOCKET_ERROR':
               clearLoadingProcess()
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -328,7 +416,7 @@ function App() {
             case 'INVITATIONS_ERROR':
               // console.log(data.error)
               // console.log('Invitations Error')
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -360,25 +448,54 @@ function App() {
               //   })
               //   updatedContacts.push(newContact)
               // })
-              let updatedContacts = data.contacts
+
+              // let updatedContacts = data.contacts
 
               // (mikekebert) When you reach the end of the list of new contacts, simply add any remaining old contacts to the new array
               // if (oldContacts.length > 0)
               //   updatedContacts = [...updatedContacts, ...oldContacts]
 
               // (mikekebert) Sort the array by data created, newest on top
-              updatedContacts.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
 
-              setContacts(updatedContacts)
+              // updatedContacts.sort((a, b) =>
+              //   a.created_at < b.created_at ? 1 : -1
+              // )
+
+              let newContacts = data.contacts
+              let oldContacts = currentState.contacts.contacts
+              let updContacts = []
+
+              newContacts.forEach((newContact) => {
+                oldContacts.forEach((oldContact, index) => {
+                  if (
+                    oldContact !== null &&
+                    newContact !== null &&
+                    oldContact.contact_id === newContact.contact_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldContacts.splice(index, 1)
+                  }
+                })
+                updContacts.push(newContact)
+              })
+
+              if (oldContacts.length > 0) {
+                // (mikekebert) Sort the array by data created, newest on top
+                updContacts.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+                updContacts = [...updContacts, ...oldContacts]
+              }
+
+              dispatch(setContacts(updContacts))
+              dispatch(setContact(data.contacts[0]))
               removeLoadingProcess('CONTACTS')
               break
 
             case 'CONTACTS_ERROR':
               // console.log(data.error)
               // console.log('Contacts Error')
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -393,7 +510,7 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -415,7 +532,7 @@ function App() {
             case 'INVITATIONS_ERROR':
               console.log(data.error)
               console.log('Invitations Error')
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -431,30 +548,30 @@ function App() {
         case 'ROLES':
           switch (type) {
             case 'ROLES':
-              setRoles((prevRoles) => {
-                let oldRoles = prevRoles
-                let newRoles = data.roles
-                let updatedRoles = []
-                // (mikekebert) Loop through the new roles and check them against the existing array
-                newRoles.forEach((newRole) => {
-                  oldRoles.forEach((oldRole, index) => {
-                    if (
-                      oldRole !== null &&
-                      newRole !== null &&
-                      oldRole.role_id === newRole.role_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldRoles.splice(index, 1)
-                    }
-                  })
-                  updatedRoles.push(newRole)
+              // setRoles((prevRoles) => {
+              let oldRoles = currentState.users.roles
+              let newRoles = data.roles
+              let updatedRoles = []
+              // (mikekebert) Loop through the new roles and check them against the existing array
+              newRoles.forEach((newRole) => {
+                oldRoles.forEach((oldRole, index) => {
+                  if (
+                    oldRole !== null &&
+                    newRole !== null &&
+                    oldRole.role_id === newRole.role_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldRoles.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
-                if (oldRoles.length > 0)
-                  updatedRoles = [...updatedRoles, ...oldRoles]
-
-                return updatedRoles
+                updatedRoles.push(newRole)
               })
+              // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
+              if (oldRoles.length > 0)
+                updatedRoles = [...updatedRoles, ...oldRoles]
+
+              dispatch(setRoles(updatedRoles))
+              // })
               removeLoadingProcess('ROLES')
 
               break
@@ -471,94 +588,93 @@ function App() {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              setUsers((prevUsers) => {
-                let oldUsers = prevUsers
-                let newUsers = data.users
-                let updatedUsers = []
-                // (mikekebert) Loop through the new users and check them against the existing array
-                newUsers.forEach((newUser) => {
-                  oldUsers.forEach((oldUser, index) => {
-                    if (
-                      oldUser !== null &&
-                      newUser !== null &&
-                      oldUser.user_id === newUser.user_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldUsers.splice(index, 1)
-                    }
-                  })
-                  updatedUsers.push(newUser)
+              // setUsers((prevUsers) => {
+              let oldUsers = currentState.users.users
+              let newUsers = data.users
+              let updatedUsers = []
+              // (mikekebert) Loop through the new users and check them against the existing array
+              newUsers.forEach((newUser) => {
+                oldUsers.forEach((oldUser, index) => {
+                  if (
+                    oldUser !== null &&
+                    newUser !== null &&
+                    oldUser.user_id === newUser.user_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldUsers.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-                if (oldUsers.length > 0)
-                  updatedUsers = [...updatedUsers, ...oldUsers]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedUsers
+                updatedUsers.push(newUser)
               })
+              // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
+              if (oldUsers.length > 0)
+                updatedUsers = [...updatedUsers, ...oldUsers]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedUsers.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+
+              dispatch(setUsers(updatedUsers))
+              // })
               removeLoadingProcess('USERS')
 
               break
 
             case 'USER':
               let user = data.user[0]
-              setUser(user)
+              dispatch(setUser(user))
               break
 
             case 'USER_UPDATED':
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUser.user_id ? data.updatedUser : x
-                )
-              })
-              setUser(data.updatedUser)
+              // setUsers((prevUsers) => {
+              const usersAfterUpdate = currentState.users.users.map((x) =>
+                x.user_id === data.updatedUser.user_id ? data.updatedUser : x
+              )
+              // })
+              dispatch(setUsers(usersAfterUpdate))
+              dispatch(setUser(data.updatedUser))
 
               break
 
             case 'PASSWORD_UPDATED':
               // (eldersonar) Replace the user with the updated user based on password)
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUserPassword.user_id
-                    ? data.updatedUserPassword
-                    : x
-                )
-              })
-
+              // setUsers((prevUsers) => {
+              const passwordUpdateUser = currentState.users.users.map((x) =>
+                x.user_id === data.updatedUserPassword.user_id
+                  ? data.updatedUserPassword
+                  : x
+              )
+              // })
+              dispatch(setUsers(passwordUpdateUser))
               break
 
             case 'USER_CREATED':
-              setUsers((prevUsers) => {
-                let updatedUsers = [...prevUsers, data.user[0]]
-                return updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-              })
-              setUser(data.user[0])
+              let usersCreated = [...currentState.users.users, data.user[0]]
+              usersCreated.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+              dispatch(setUsers(usersCreated))
+              dispatch(setUser(data.user[0]))
 
               break
 
             case 'USER_DELETED':
-              setUsers((prevUsers) => {
-                const index = prevUsers.findIndex((v) => v.user_id === data)
-                let alteredUsers = [...prevUsers]
-                alteredUsers.splice(index, 1)
-                return alteredUsers
-              })
-
+              const index = currentState.users.users.findIndex(
+                (v) => v.user_id === data
+              )
+              let alteredUsers = [...currentState.users.users]
+              alteredUsers.splice(index, 1)
+              dispatch(setUsers(alteredUsers))
               break
 
             case 'USER_ERROR':
               // console.log('User Error', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'USER_SUCCESS':
               // console.log('USER SUCCESS')
-              setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -573,50 +689,47 @@ function App() {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-              setCredentials((prevCred) => {
-                let oldCredentials = prevCred
-                let newCredentials = data.credential_records
-                let updatedCredentials = []
-                // (mikekebert) Loop through the new credentials and check them against the existing array
-                newCredentials.forEach((newCredential) => {
-                  oldCredentials.forEach((oldCredential, index) => {
-                    if (
-                      oldCredential !== null &&
-                      newCredential !== null &&
-                      oldCredential.credential_exchange_id ===
-                        newCredential.credential_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldCredentials.splice(index, 1)
-                    }
-                  })
-                  updatedCredentials.push(newCredential)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+              // setCredentials((prevCred) => {
+              let oldCredentials = currentState.credentials.credentials
+              let newCredentials = data.credential_records
+              let updatedCredentials = []
+              // (mikekebert) Loop through the new credentials and check them against the existing array
+              newCredentials.forEach((newCredential) => {
+                oldCredentials.forEach((oldCredential, index) => {
                   if (
-                    newCredential.connection_id === pendingEmployeeConnectionID
+                    oldCredential !== null &&
+                    newCredential !== null &&
+                    oldCredential.credential_exchange_id ===
+                      newCredential.credential_exchange_id
                   ) {
-                    setPendingEmployeeConnectionID('')
-                  }
-                  if (
-                    newCredential.connection_id ===
-                    pendingVaccinationConnectionID
-                  ) {
-                    setPendingVaccinationConnectionID('')
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldCredentials.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
-                if (oldCredentials.length > 0)
-                  updatedCredentials = [
-                    ...updatedCredentials,
-                    ...oldCredentials,
-                  ]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedCredentials.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedCredentials
+                updatedCredentials.push(newCredential)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (
+                  newCredential.connection_id === pendingEmployeeConnectionID
+                ) {
+                  setPendingEmployeeConnectionID('')
+                }
+                if (
+                  newCredential.connection_id === pendingVaccinationConnectionID
+                ) {
+                  setPendingVaccinationConnectionID('')
+                }
               })
+              // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
+              if (oldCredentials.length > 0)
+                updatedCredentials = [...updatedCredentials, ...oldCredentials]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedCredentials.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+
+              dispatch(setCredential(data.credential_records[0]))
+              dispatch(setCredentials(updatedCredentials))
+              // })
               removeLoadingProcess('CREDENTIALS')
 
               break
@@ -624,7 +737,7 @@ function App() {
             case 'CREDENTIALS_ERROR':
               // console.log(data.error)
               // console.log('Credentials Error')
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -648,53 +761,52 @@ function App() {
               break
 
             case 'PRESENTATION_REPORTS':
-              setPresentationReports((prevPresentations) => {
-                let oldPresentations = prevPresentations
-                let newPresentations = data.presentation_reports
-                let updatedPresentations = []
+              // setPresentationReports((prevPresentations) => {
+              let oldPresentations =
+                currentState.presentations.presentationReports
+              let newPresentations = data.presentation_reports
+              let updatedPresentations = []
 
-                // (mikekebert) Loop through the new presentation and check them against the existing array
-                newPresentations.forEach((newPresentation) => {
-                  oldPresentations.forEach((oldPresentation, index) => {
-                    if (
-                      oldPresentation !== null &&
-                      newPresentation !== null &&
-                      oldPresentation.presentation_exchange_id ===
-                        newPresentation.presentation_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      console.log('splice', oldPresentation)
-                      oldPresentations.splice(index, 1)
-                    }
-                  })
-                  updatedPresentations.push(newPresentation)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+              // (mikekebert) Loop through the new presentation and check them against the existing array
+              newPresentations.forEach((newPresentation) => {
+                oldPresentations.forEach((oldPresentation, index) => {
                   if (
-                    newPresentation.connection_id ===
-                    pendingEmployeeConnectionID
+                    oldPresentation !== null &&
+                    newPresentation !== null &&
+                    oldPresentation.presentation_exchange_id ===
+                      newPresentation.presentation_exchange_id
                   ) {
-                    setPendingEmployeeConnectionID('')
-                  }
-                  if (
-                    newPresentation.connection_id ===
-                    pendingVaccinationConnectionID
-                  ) {
-                    setPendingVaccinationConnectionID('')
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldPresentations.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
-                if (oldPresentations.length > 0)
-                  updatedPresentations = [
-                    ...updatedPresentations,
-                    ...oldPresentations,
-                  ]
-                // (mikekebert) Sort the array by date created, newest on top
-                updatedPresentations.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedPresentations
+                updatedPresentations.push(newPresentation)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (
+                  newPresentation.connection_id === pendingEmployeeConnectionID
+                ) {
+                  setPendingEmployeeConnectionID('')
+                }
+                if (
+                  newPresentation.connection_id ===
+                  pendingVaccinationConnectionID
+                ) {
+                  setPendingVaccinationConnectionID('')
+                }
               })
+              // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
+              if (oldPresentations.length > 0)
+                updatedPresentations = [
+                  ...updatedPresentations,
+                  ...oldPresentations,
+                ]
+              // (mikekebert) Sort the array by date created, newest on top
+              updatedPresentations.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+
+              dispatch(setPresentationReports(updatedPresentations))
+              // })
               removeLoadingProcess('PRESENTATIONS')
 
               break
@@ -729,38 +841,38 @@ function App() {
               // Writing the recent theme to a local storage
               const stringMessageTheme = JSON.stringify(data.value)
               window.localStorage.setItem('recentTheme', stringMessageTheme)
-              setTheme(data.value)
+              dispatch(setTheme(data.value))
               removeLoadingProcess('THEME')
               break
 
             case 'SETTINGS_SCHEMAS':
-              setSchemas(data)
+              dispatch(setSchemas(data))
               removeLoadingProcess('SCHEMAS')
               break
 
             case 'LOGO':
-              setImage(data)
+              dispatch(setLogo(handleImageSrc(data.image.data)))
               removeLoadingProcess('LOGO')
               break
 
             case 'SETTINGS_ORGANIZATION':
-              setOrganizationName(data.organizationName)
-              setSiteTitle(data.title)
+              dispatch(setOrganizationName(data.organizationName))
+              dispatch(setSiteTitle(data.title))
               removeLoadingProcess('ORGANIZATION')
               break
 
             case 'SETTINGS_SMTP':
-              setSmtp(data.value)
+              dispatch(setSmtp(data.value))
               removeLoadingProcess('SMTP')
               break
 
             case 'SETTINGS_ERROR':
               // console.log('Settings Error:', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'SETTINGS_SUCCESS':
-              setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -775,14 +887,14 @@ function App() {
         case 'IMAGES':
           switch (type) {
             case 'IMAGE_LIST':
-              setImage(data)
+              dispatch(setLogo(data))
 
               removeLoadingProcess('IMAGES')
               break
 
             case 'IMAGES_ERROR':
               // console.log('Images Error:', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -799,7 +911,7 @@ function App() {
             case 'PRIVILEGES_ERROR':
               console.log(data)
               console.log('Privileges Error', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               removeLoadingProcess('GOVERNANCE')
               break
 
@@ -856,14 +968,14 @@ function App() {
 
   function setUpUser(id, username, roles) {
     setSession(cookies.get('sessionId'))
-    setLoggedInUserId(id)
-    setLoggedInUsername(username)
-    setLoggedInRoles(roles)
+    dispatch(setLoggedInUserId(id))
+    dispatch(setLoggedInUsername(username))
+    dispatch(setLoggedInRoles(roles))
   }
 
   // Update theme state locally
   const updateTheme = (update) => {
-    return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
+    return dispatch(setTheme({ ...theme, ...update }))
   }
 
   // Update theme in the database
@@ -889,21 +1001,22 @@ function App() {
   }
 
   // Undo theme change
+  const recentTheme = JSON.parse(localStorage.getItem('recentTheme'))
   const undoStyle = (undoKey) => {
     if (undoKey !== undefined) {
-      for (let key in defaultTheme)
+      for (let key in recentTheme)
         if ((key = undoKey)) {
-          const undo = { [`${key}`]: defaultTheme[key] }
-          return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
+          const undo = { [`${key}`]: recentTheme[key] }
+          return dispatch(setTheme({ ...theme, ...undo }))
         }
     }
   }
 
   // Resetting state of error and success messages
-  const clearResponseState = () => {
-    setErrorMessage(null)
-    setSuccessMessage(null)
-  }
+  // const clearResponseState = () => {
+  //   setErrorMessage(null)
+  //   setSuccessMessage(null)
+  // }
 
   // Logout and redirect
   const handleLogout = (history) => {
@@ -912,13 +1025,14 @@ function App() {
       url: '/api/user/log-out',
       withCredentals: true,
     }).then((res) => {
-      setLoggedIn(false)
       setSession('')
       setWebsocket(false)
-      setLoggedInUserState(null)
-      setLoggedInUserId('')
-      setLoggedInUsername('')
-      setLoggedInRoles([])
+      dispatch(logoutUser())
+      dispatch(clearUsersState())
+      dispatch(clearSettingsState())
+      dispatch(clearPresentationsState())
+      dispatch(clearCredentialsState())
+      dispatch(clearContactstate())
 
       // (eldersonar) Does this close the connection and remove the connection object?
       closeWSConnection(1000, 'Log out')
@@ -928,14 +1042,17 @@ function App() {
     })
   }
 
-  if ((loggedIn && !appIsLoaded) || (!loggedIn && !appIsLoaded)) {
+  if (
+    (loginState.loggedIn && !appIsLoaded) ||
+    (!loginState.loggedIn && !appIsLoaded)
+  ) {
     // Show the spinner while the app is loading
     return (
       <ThemeProvider theme={theme}>
         <FullPageSpinner />
       </ThemeProvider>
     )
-  } else if (!loggedIn && appIsLoaded) {
+  } else if (!loginState.loggedIn && appIsLoaded) {
     return (
       <ThemeProvider theme={theme}>
         <NotificationProvider>
@@ -948,11 +1065,11 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <ForgotPassword
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
-                          users={users}
+                          // user={user}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -966,11 +1083,11 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <PasswordReset
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
-                          users={users}
+                          // user={user}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -984,12 +1101,12 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <AccountSetup
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
                           messageHandler={messageHandler}
-                          user={user}
-                          users={users}
+                          // user={user}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -1003,11 +1120,11 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <Login
-                          logo={image}
+                          // logo={image}
                           history={history}
                           setUpUser={setUpUser}
                           sendRequest={sendMessage}
-                          setLoggedIn={setLoggedIn}
+                          // setLoggedIn={setLoggedIn}
                         />
                       </Main>
                     </Frame>
@@ -1049,22 +1166,23 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          logo={image}
-                          organizationName={organizationName}
-                          loggedInUsername={loggedInUsername}
+                          // loggedInUserState={loggedInUserState}
+                          // logo={image}
+                          // organizationName={organizationName}
+                          // loggedInUsername={loggedInUsername}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
                         />
                         <Main>
                           <Home
-                            loggedInUserState={loggedInUserState}
+                            // loggedInUserState={loggedInUserState}
                             sendRequest={sendMessage}
                             privileges={privileges}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
+                            history={history}
+                            // successMessage={successMessage}
+                            // errorMessage={errorMessage}
+                            // clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                           />
                         </Main>
@@ -1075,14 +1193,15 @@ function App() {
                 <Route
                   path="/invitations"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'invitations:read')) {
+                    // if (check(rules, loggedInUserState, 'invitations:read')) {
+                    if (check('invitations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1101,24 +1220,25 @@ function App() {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    // if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
                             <Contacts
-                              loggedInUserState={loggedInUserState}
+                              // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              contacts={contacts}
+                              // contacts={contacts}
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
@@ -1132,30 +1252,31 @@ function App() {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    // if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
                             <Contact
-                              loggedInUserState={loggedInUserState}
+                              // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
                               privileges={privileges}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
+                              // clearResponseState={clearResponseState}
                               contactId={match.params.contactId}
-                              contacts={contacts}
-                              credentials={credentials}
+                              // contacts={contacts}
+                              // credentials={credentials}
                             />
                           </Main>
                         </Frame>
@@ -1169,14 +1290,15 @@ function App() {
                   path="/credentials"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    // if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1184,7 +1306,7 @@ function App() {
                           <Main>
                             <Credentials
                               history={history}
-                              credentials={credentials}
+                              // credentials={credentials}
                             />
                           </Main>
                         </Frame>
@@ -1197,14 +1319,15 @@ function App() {
                 <Route
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    // if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             handleLogout={handleLogout}
                           />
@@ -1212,8 +1335,8 @@ function App() {
                             <Credential
                               history={history}
                               credential={match.params.credentialId}
-                              credentials={credentials}
-                              schemas={schemas}
+                              // credentials={credentials}
+                              // schemas={schemas}
                             />
                           </Main>
                         </Frame>
@@ -1222,7 +1345,7 @@ function App() {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  credentials={credentials}
+                  // credentials={credentials}
                 />
                 <Route
                   path="/verification"
@@ -1230,10 +1353,10 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
+                          // logo={image}
+                          // organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1251,10 +1374,10 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
+                          // logo={image}
+                          // organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1270,14 +1393,15 @@ function App() {
                   path="/presentations"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    // if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1285,8 +1409,8 @@ function App() {
                           <Main>
                             <Presentations
                               history={history}
-                              presentationReports={presentationReports}
-                              contacts={contacts}
+                              // presentationReports={presentationReports}
+                              // contacts={contacts}
                             />
                           </Main>
                         </Frame>
@@ -1299,14 +1423,15 @@ function App() {
                 <Route
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    // if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1315,8 +1440,8 @@ function App() {
                             <Presentation
                               history={history}
                               presentation={match.params.presentationId}
-                              presentationReports={presentationReports}
-                              contacts={contacts}
+                              // presentationReports={presentationReports}
+                              // contacts={contacts}
                             />
                           </Main>
                         </Frame>
@@ -1325,32 +1450,33 @@ function App() {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  presentationReports={presentationReports}
+                  // presentationReports={presentationReports}
                 />
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'users:read')) {
+                    // if (check(rules, loggedInUserState, 'users:read')) {
+                    if (check('users:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
                             <Users
-                              loggedInUserState={loggedInUserState}
-                              roles={roles}
-                              users={users}
-                              user={user}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
+                              // loggedInUserState={loggedInUserState}
+                              // roles={roles}
+                              // users={users}
+                              // user={user}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
+                              // clearResponseState={clearResponseState}
                               sendRequest={sendMessage}
                             />
                           </Main>
@@ -1367,17 +1493,17 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
+                          // logo={image}
+                          // organizationName={organizationName}
                           match={match}
                           handleLogout={handleLogout}
                         />
                         <Main>
                           <User
-                            logo={image}
-                            organizationName={organizationName}
+                            // logo={image}
+                            // organizationName={organizationName}
                             history={history}
                           />
                         </Main>
@@ -1388,14 +1514,15 @@ function App() {
                 <Route
                   path="/settings"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'settings:update')) {
+                    // if (check(rules, loggedInUserState, 'settings:update')) {
+                    if (check('settings:update')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
+                            // logo={image}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1405,17 +1532,17 @@ function App() {
                               updateTheme={updateTheme}
                               saveTheme={saveTheme}
                               undoStyle={undoStyle}
-                              errorMessage={errorMessage}
-                              successMessage={successMessage}
-                              clearResponseState={clearResponseState}
-                              imageResponse={image}
+                              // errorMessage={errorMessage}
+                              // successMessage={successMessage}
+                              // clearResponseState={clearResponseState}
+                              // imageResponse={image}
                               stylesArray={stylesArray}
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
-                              smtp={smtp}
-                              organizationName={organizationName}
-                              siteTitle={siteTitle}
+                              // smtp={smtp}
+                              // organizationName={organizationName}
+                              // siteTitle={siteTitle}
                             />
                           </Main>
                         </Frame>

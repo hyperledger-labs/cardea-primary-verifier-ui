@@ -30,9 +30,9 @@ function User(props) {
   // Accessing notification context
   // const setNotification = useNotification()
 
-  const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
+  // const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
 
-  const closeUserEditModal = () => setUserEditModalIsOpen(false)
+  // const closeUserEditModal = () => setUserEditModalIsOpen(false)
 
   // const editUser = (email) => {
   //   setUserEditModalIsOpen(true)

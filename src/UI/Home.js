@@ -48,6 +48,7 @@ function Home(props) {
   const contact = contactsState.contact
 
   const dispatch = useDispatch()
+  const history = props.history
 
   // const error = props.errorMessage
   // const success = props.successMessage
@@ -57,7 +58,7 @@ function Home(props) {
 
   // const [govGranted, setGovGranted] = useState(undefined)
 
-  const [index, setIndex] = useState(false)
+  // const [index, setIndex] = useState(false)
 
   const [oob, setOOB] = useState(false)
 
@@ -71,6 +72,17 @@ function Home(props) {
 
   // Accessing notification context
   const setNotification = useNotification()
+  console.log('1111 displayModalIsOpen', displayModalIsOpen)
+  console.log('2222 contact.contact_id', contact.contact_id)
+  console.log('3333 history', history)
+
+  // Redirect to contact when contact is created
+  useEffect(() => {
+    if (displayModalIsOpen && contact.contact_id && history !== undefined) {
+      closeScanModal()
+      history.push('/contacts/' + contact.contact_id)
+    }
+  }, [contact])
 
   useEffect(() => {
     if (success) {
