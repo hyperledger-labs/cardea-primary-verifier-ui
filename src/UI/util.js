@@ -43,9 +43,9 @@ export function handleGovernance(privileges, actions, participants) {
   }
   // Privileges, actions and participants don't exist DONE
   else if (
-    (privileges === undefined || privileges.length == 0) &&
-    (actions === undefined || actions.length == 0) &&
-    (participants === undefined || participants.length == 0)
+    (privileges === undefined || privileges.length === 0) &&
+    (actions === undefined || actions.length === 0) &&
+    (participants === undefined || participants.length === 0)
   ) {
     console.log("privileges, actions and participants don't exist")
     return true

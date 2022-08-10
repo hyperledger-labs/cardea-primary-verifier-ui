@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import styled from 'styled-components'
@@ -117,12 +117,12 @@ const InputField = styled.input`
   }
 `
 
-const Select = styled.select`
-  color: ${(props) => props.theme.text_color};
-  font-size: 1.5em;
-  height: 30px;
-  width: 50%;
-`
+// const Select = styled.select`
+//   color: ${(props) => props.theme.text_color};
+//   font-size: 1.5em;
+//   height: 30px;
+//   width: 50%;
+// `
 
 function FormTrustedTraveler(props) {
   const contactsState = useSelector((state) => state.contacts)
@@ -152,9 +152,6 @@ function FormTrustedTraveler(props) {
 
     let attributes = {}
     if (contactSelected) {
-      // const traveler = props.contactSelected.Traveler
-      // const passport = props.contactSelected.Passport
-
       attributes = [
         {
           name: 'trusted_traveler_id',

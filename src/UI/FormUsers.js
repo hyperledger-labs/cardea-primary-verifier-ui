@@ -29,8 +29,6 @@ function FormUsers(props) {
   const roles = usersState.roles
 
   const [options, setOptions] = useState([])
-
-  // const roles = props.roles
   const error = props.error
 
   const userForm = useRef()

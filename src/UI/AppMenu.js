@@ -48,21 +48,8 @@ const StyledLink = styled(NavLink)`
     background: ${(props) => props.theme.background_secondary};
   }
 `
-const StyledSubLink = styled(NavLink)`
-  display: block;
-  padding: 10px 0 10px 20px;
-  font-size: 14px;
-  text-decoration: none;
-  color: ${(props) => props.theme.text_color};
-  &:hover,
-  &.active {
-    text-decoration: underline;
-    color: ${(props) => props.theme.primary_color};
-    background: none;
-  }
-`
+
 function AppMenu(props) {
-  // const localUser = props.loggedInUserState
   const loginState = useSelector((state) => state.login)
   const localUser = loginState.loggedInUserState
 
@@ -79,13 +66,7 @@ function AppMenu(props) {
               Home
             </StyledLink>
           </Item>
-          {/*<Item className={pathMatch === '/invitations' ? 'active' : undefined}>
-            <StyledLink to="/invitations">
-              Invitations
-            </StyledLink>
-          </Item>*/}
           <CanUser
-            // user={localUser}
             perform="contacts:read"
             yes={() => (
               <Item
@@ -94,23 +75,10 @@ function AppMenu(props) {
                 }
               >
                 <StyledLink to="/contacts">Contacts</StyledLink>
-                {/*<List>
-              <Item className={pathMatch === '/contacts' ? 'active' : undefined}>
-                <StyledSubLink exact to="/contacts">
-                  Contacts
-                </StyledSubLink>
-              </Item>
-              <Item>
-                <StyledSubLink to="/contacts/invitations">
-                  Invitations
-                </StyledSubLink>
-              </Item>
-            </List>*/}
               </Item>
             )}
           />
           <CanUser
-            // user={localUser}
             perform="credentials:read"
             yes={() => (
               <Item
@@ -121,7 +89,6 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            // user={localUser}
             perform="presentations:read"
             yes={() => (
               <Item
@@ -134,7 +101,6 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            // user={localUser}
             perform="users:read"
             yes={() => (
               <Item className={pathMatch === '/users' ? 'active' : undefined}>
@@ -142,21 +108,7 @@ function AppMenu(props) {
               </Item>
             )}
           />
-          {/* <CanUser
-            user={localUser}
-            perform="basicMessages:read"
-            yes={() => (
-              <>
-                <Item
-                  className={pathMatch === '/messages' ? 'active' : undefined}
-                >
-                  <StyledLink to="/messages">Messages</StyledLink>
-                </Item>
-              </>
-            )}
-          /> */}
           <CanUser
-            // user={localUser}
             perform="settings:read"
             yes={() => (
               <>

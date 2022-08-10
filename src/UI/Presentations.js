@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 
 import PageHeader from './PageHeader'
@@ -12,9 +12,6 @@ function Presentations(props) {
 
   let presentations = presentationsState.presentationReports
   const contacts = contactsState.contacts
-
-  // let presentations = props.presentationReports
-  // const contacts = props.contacts
 
   // (AmmonBurgi) Match up the connection_id's and give each presentation a contact_label. Used for-loop for speed.
   for (let i = 0; i < presentations.length; i++) {

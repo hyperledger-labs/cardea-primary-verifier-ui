@@ -44,7 +44,6 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
-  // const localUser = props.loggedInUserState
   const dispatch = useDispatch()
   const contactsState = useSelector((state) => state.contacts)
   const credentialsState = useSelector((state) => state.credentials)
@@ -62,18 +61,13 @@ function Contact(props) {
 
   const history = props.history
   const contactId = props.contactId
-  // const error = props.errorMessage
-  // const success = props.successMessage
   const privileges = props.privileges
-  // const credentials = props.credentials
-  // const contacts = props.contacts
 
   let contactToSelect = ''
 
   // Modal state
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
   const [travelerModalIsOpen, setTravelerModalIsOpen] = useState(false)
-  const [credentialModalIsOpen, setCredentialModalIsOpen] = useState(false)
 
   const closeContactModal = () => setContactModalIsOpen(false)
   const closeTravelerModal = () => setTravelerModalIsOpen(false)
@@ -100,29 +94,7 @@ function Contact(props) {
     } else return
   }, [error, success, warning, setNotification, dispatch])
 
-  // useEffect(() => {
-  //   if (success) {
-  //     setNotification(success, 'notice')
-  //     props.clearResponseState()
-  //   } else if (error) {
-  //     setNotification(error, 'error')
-  //     props.clearResponseState()
-  //     setIndex(index + 1)
-  //   }
-  // }, [error, success])
-
   const isMounted = useRef(null)
-
-  // const [index, setIndex] = useState(false)
-
-  // useEffect(() => {
-  //   for (let i = 0; i < props.contacts.length; i++) {
-  //     if (props.contacts[i].contact_id == contactId) {
-  //       setContactSelected(props.contacts[i])
-  //       break
-  //     }
-  //   }
-  // }, [contacts, credentials])
 
   // Get governance privileges
   useEffect(() => {
@@ -137,39 +109,18 @@ function Contact(props) {
     dispatch(setContactSelected(contactToSelect))
   }, [contactToSelect, dispatch])
 
-  // useEffect(() => {
-  //   setContactSelected(contactToSelect)
-  // }, [contactToSelect])
-
   function openCredential(history, id) {
     if (history !== undefined) {
       history.push('/credentials/' + id)
     }
   }
 
-  // Contact form customization (no contact search dropdown)
-  // const [contactSearch, setContactSearch] = useState(false)
-
-  // const [contactSelected, setContactSelected] = useState(contactToSelect)
-
-  let travelerData = ''
   let passportData = ''
 
   if (
     contactSelected.Passport !== null &&
     contactSelected.Passport !== undefined
   ) {
-    let rawImage = contactSelected.Passport.photo
-
-    // const handleImageSrc = (rawImage) => {
-    //   let bytes = new Uint8Array(rawImage)
-    //   bytes = Buffer.from(rawImage).toString('base64')
-    //   let result = atob(bytes)
-    //   return result
-    // }
-
-    // let test = handleImageSrc(rawImage)
-
     passportData = (
       <>
         <h2>Passport Information</h2>
@@ -284,13 +235,8 @@ function Contact(props) {
                   : ''}
               </td>
             </AttributeRow>
-            {/* <AttributeRow>
-              <th>Photo:</th>
-              <td></td>
-            </AttributeRow> */}
           </tbody>
         </AttributeTable>
-        {/* <img src={test} alt="Error" /> */}
       </>
     )
   }
@@ -488,7 +434,6 @@ function Contact(props) {
         </PageSection>
         <PageSection>
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -505,60 +450,6 @@ function Contact(props) {
               </IssueCredential>
             )}
           />
-          {/* <CanUser
-            user={localUser}
-            perform="credentials:issue"
-            yes={() => (
-              <IssueCredential
-                onClick={() =>
-                  privileges && privileges.includes('issue_trusted_traveler')
-                    ? beginIssuance('Result')
-                    : setNotification(
-                        "Error: you don't have the right privileges",
-                        'error'
-                      )
-                }
-              >
-                Issue Trusted Traveler - Lab Result
-              </IssueCredential>
-            )}
-          />
-          <CanUser
-            user={localUser}
-            perform="credentials:issue"
-            yes={() => (
-              <IssueCredential
-                onClick={() =>
-                  privileges && privileges.includes('issue_trusted_traveler')
-                    ? beginIssuance('Exemption')
-                    : setNotification(
-                        "Error: you don't have the right privileges",
-                        'error'
-                      )
-                }
-              >
-                Issue Trusted Traveler - Exemption
-              </IssueCredential>
-            )}
-          />
-          <CanUser
-            user={localUser}
-            perform="credentials:issue"
-            yes={() => (
-              <IssueCredential
-                onClick={() =>
-                  privileges && privileges.includes('issue_trusted_traveler')
-                    ? beginIssuance('Vaccine')
-                    : setNotification(
-                        "Error: you don't have the right privileges",
-                        'error'
-                      )
-                }
-              >
-                Issue Trusted Traveler - Vaccine
-              </IssueCredential>
-            )}
-          /> */}
           <DataTable>
             <thead>
               <DataRow>
@@ -571,14 +462,12 @@ function Contact(props) {
           </DataTable>
         </PageSection>
         <FormContacts
-          // contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
           submitDemographics={updateDemographics}
           submitPassport={updatePasport}
         />
         <FormTrustedTraveler
-          // contactSelected={contactSelected}
           travelerModalIsOpen={travelerModalIsOpen}
           closeCredentialModal={closeTravelerModal}
           submitCredential={submitNewCredential}

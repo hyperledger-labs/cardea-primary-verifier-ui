@@ -55,14 +55,6 @@ function FormContacts(props) {
     contactSelected && contactSelected.Demographic
       ? JSON.parse(JSON.stringify(contactSelected.Demographic.country))
       : ''
-  // const country =
-  //   props.contactSelected &&
-  //   props.contactSelected.Demographic &&
-  //   props.contactSelected.Demographic.address
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.address.country)
-  //       )
-  //     : ''
   const passport_number =
     contactSelected && contactSelected.Passport
       ? JSON.parse(JSON.stringify(contactSelected.Passport.passport_number))
@@ -131,12 +123,10 @@ function FormContacts(props) {
     demographics.contact_id = contactSelected.contact_id
     demographics.email = form.get('email')
     demographics.phone = form.get('phone')
-    // demographics.address = {}
     demographics.street_address = form.get('street_address')
     demographics.city = form.get('city')
     demographics.state_province_region = form.get('state_province_region')
     demographics.postal_code = form.get('postal_code')
-    // demographics.zip_code = form.get('zip_code')
     demographics.country = form.get('country')
 
     props.submitDemographics(demographics, e)
@@ -249,14 +239,6 @@ function FormContacts(props) {
                   placeholder="USA"
                 ></InputFieldModal>
               </InputBox>
-              {/* <InputBox>
-                <ModalLabel htmlFor="country">Country</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="country"
-                  defaultValue={country}
-                ></InputFieldModal>
-              </InputBox> */}
               <InputBox>
                 <ModalLabel htmlFor="contact_id"></ModalLabel>
                 <InputFieldModal

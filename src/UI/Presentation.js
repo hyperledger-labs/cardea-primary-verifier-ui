@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 
 import PageHeader from './PageHeader.js'
@@ -15,9 +15,7 @@ function Presentation(props) {
   const contacts = contactsState.contacts
   const presentationReports = presentationsState.presentationReports
 
-  // const contacts = props.contacts
   const presentationId = props.presentation
-  // const presentationReports = props.presentationReports
 
   let presentationSelected = ''
 

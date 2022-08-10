@@ -28,9 +28,6 @@ function FormUserEdit(props) {
   const roles = usersState.roles
   const users = usersState.users
   const loggedInUserState = loginState.loggedInUserState
-  // const roles = props.roles
-  // const users = props.users
-  // const loggedInUserState = props.loggedInUserState
   const error = props.error
 
   // Get the selected user

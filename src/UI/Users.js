@@ -39,9 +39,6 @@ function Users(props) {
   const users = usersState.users
   const loggedInUserState = loginState.loggedInUserState
 
-  // const error = props.errorMessage
-  // const success = props.successMessage
-
   const [userModalIsOpen, setUserModalIsOpen] = useState(false)
   const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
   const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false)
@@ -73,11 +70,6 @@ function Users(props) {
       dispatch(clearNotificationState())
     } else return
   }, [error, success, dispatch, setNotification, warning])
-
-  // const loggedInUserState = props.loggedInUserState
-
-  // const roles = props.roles
-  // const users = props.users
 
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
@@ -132,7 +124,6 @@ function Users(props) {
           <DataCell>{userRoles}</DataCell>
 
           <CanUser
-            // user={loggedInUserState}
             perform="users:update, users:updateRoles"
             yes={() => (
               <IconCell
@@ -147,7 +138,6 @@ function Users(props) {
           />
           {loggedInUserState && loggedInUserState.id !== userId ? (
             <CanUser
-              // user={loggedInUserState}
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -165,7 +155,6 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-              // user={loggedInUserState}
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -209,7 +198,6 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-                  // user={loggedInUserState}
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -218,7 +206,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  // user={loggedInUserState}
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -227,7 +214,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  // user={loggedInUserState}
                   perform="users:create"
                   yes={() => (
                     <DataHeader>
@@ -246,17 +232,13 @@ function Users(props) {
         <FormUsers
           sendRequest={props.sendRequest}
           error={index}
-          // roles={roles}
           userModalIsOpen={userModalIsOpen}
           closeUserModal={closeUserModal}
         />
         <FormUserEdit
           sendRequest={props.sendRequest}
           error={index}
-          // roles={roles}
           userEmail={userEmail}
-          // users={users}
-          // loggedInUserState={loggedInUserState}
           userEditModalIsOpen={userEditModalIsOpen}
           closeUserEditModal={closeUserEditModal}
         />

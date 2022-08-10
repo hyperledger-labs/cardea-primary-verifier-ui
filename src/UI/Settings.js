@@ -145,11 +145,6 @@ function Settings(props) {
   // Accessing notification context
   const setNotification = useNotification()
 
-  // const error = props.errorMessage
-  // const success = props.successMessage
-  // let smtpConf = props.smtp
-  // const messageEventCounter = props.messageEventCounter
-
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')

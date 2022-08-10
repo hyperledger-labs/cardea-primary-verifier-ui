@@ -1,12 +1,11 @@
 import Axios from 'axios'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import { setLoggedIn } from '../redux/loginReducer'
 
 import { useNotification } from './NotificationProvider'
-import { handleImageSrc } from './util'
 
 import {
   FormContainer,
@@ -32,26 +31,10 @@ function Login(props) {
   const logo = settingsState.logo
   const dispatch = useDispatch()
 
-  // const [logo, setLogo] = useState(null)
-
   // Accessing notification context
   const setNotification = useNotification()
 
   const loginForm = useRef()
-
-  // useEffect(() => {
-  //   // Fetching the logo
-  //   Axios({
-  //     method: 'GET',
-  //     url: '/api/logo',
-  //   }).then((res) => {
-  //     if (res.data.error) {
-  //       setNotification(res.data.error, 'error')
-  //     } else {
-  //       setLogo(handleImageSrc(res.data[0].image.data))
-  //     }
-  //   })
-  // }, [setNotification])
 
   const handleSubmit = (e) => {
     e.preventDefault()

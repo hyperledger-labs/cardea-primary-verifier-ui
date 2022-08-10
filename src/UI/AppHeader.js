@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
-// import { handleImageSrc } from './util'
 
 import styled from 'styled-components'
 import { Logo, LogoHolder } from './CommonStylesForms'
@@ -55,20 +54,11 @@ const Logout = styled.button`
 `
 
 function AppHeader(props) {
-  // const [src, setSrc] = useState(null)
-  // const logo = props.logo
-  // const organizationName = props.organizationName
   const settingsState = useSelector((state) => state.settings)
   const loginState = useSelector((state) => state.login)
 
   const logo = settingsState.logo
   const organizationName = settingsState.organizationName
-
-  // useEffect(() => {
-  //   if (logo && logo.image) {
-  //     setSrc(handleImageSrc(logo.image.data))
-  //   }
-  // }, [logo])
 
   const handleLogout = () => {
     props.handleLogout(props.history)

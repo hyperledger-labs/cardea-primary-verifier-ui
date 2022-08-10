@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { clearNotificationState } from '../redux/notificationsReducer'
@@ -49,32 +49,17 @@ function Home(props) {
 
   const dispatch = useDispatch()
   const history = props.history
-
-  // const error = props.errorMessage
-  // const success = props.successMessage
-  // const warning = props.warningMessage
-  // const localUser = props.loggedInUserState
   const privileges = props.privileges
 
-  // const [govGranted, setGovGranted] = useState(undefined)
-
-  // const [index, setIndex] = useState(false)
-
   const [oob, setOOB] = useState(false)
-
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
   const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
 
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  const isMounted = useRef(null)
-
   // Accessing notification context
   const setNotification = useNotification()
-  console.log('1111 displayModalIsOpen', displayModalIsOpen)
-  console.log('2222 contact.contact_id', contact.contact_id)
-  console.log('3333 history', history)
 
   // Redirect to contact when contact is created
   useEffect(() => {
@@ -96,15 +81,6 @@ function Home(props) {
       dispatch(clearNotificationState())
     } else return
   }, [error, success, warning, setNotification])
-
-  // // Get governance privileges
-  // useEffect(() => {
-  //   isMounted.current = true
-  //   props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
-  //   return () => {
-  //     isMounted.current = false
-  //   }
-  // }, [])
 
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)
@@ -135,7 +111,6 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -144,7 +119,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -153,7 +127,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -162,7 +135,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>
