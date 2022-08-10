@@ -132,7 +132,7 @@ function App() {
 
   // session states
   const [session, setSession] = useState('')
-  const [sessionTimer, setSessionTimer] = useState(60)
+  const [sessionTimer] = useState(60)
 
   const [QRCodeURL, setQRCodeURL] = useState('')
   const [
@@ -187,7 +187,7 @@ function App() {
         requestLogo()
         setAppIsLoaded(true)
       })
-  }, [loginState.loggedIn])
+  }, [loginState.loggedIn, dispatch])
 
   // Setting up websocket and controllerSocket
   useEffect(() => {

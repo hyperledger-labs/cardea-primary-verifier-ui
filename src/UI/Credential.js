@@ -52,10 +52,18 @@ function Credential(props) {
       new Date(credentialSelected.created_at).toISOString().substring(0, 10) ||
       ''
     patient_given = attributesArray.find(function (attribute, index) {
-      if (attribute.name === 'traveler_given_names') return attribute
+      if (attribute.name === 'traveler_given_names') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_sur = attributesArray.find(function (attribute, index) {
-      if (attribute.name === 'traveler_surnames') return attribute
+      if (attribute.name === 'traveler_surnames') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_name = patient_given.value + ' ' + patient_sur.value
     // Values that depend on the credential being issued

@@ -80,7 +80,7 @@ function Home(props) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
     } else return
-  }, [error, success, warning, setNotification])
+  }, [error, success, warning, setNotification, dispatch])
 
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)

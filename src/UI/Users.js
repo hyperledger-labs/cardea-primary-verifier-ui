@@ -69,7 +69,7 @@ function Users(props) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
     } else return
-  }, [error, success, dispatch, setNotification, warning])
+  }, [error, success, dispatch, warning])
 
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
