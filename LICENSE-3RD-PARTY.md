@@ -16,7 +16,10 @@ See also: https://mit-license.org/
 - [qrcode react](https://github.com/zpao/qrcode.react)
 - [React Router](https://github.com/ReactTraining/react-router)
 - [react-tooltip](https://github.com/wwayne/react-tooltip)
+- [react-redux](https://github.com/reduxjs/react-redux)
 - [Reactjs-popup](https://github.com/yjose/reactjs-popup)
+- [redux](https://github.com/reduxjs/redux)
+- [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
 - [Styled Components](https://github.com/styled-components/styled-components)
 - [universal-cookie](https://github.com/reactivestack/cookies)
 
