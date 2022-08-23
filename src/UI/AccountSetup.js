@@ -94,7 +94,7 @@ function AccountSetup(props) {
     const form = new FormData(accSetupForm.current)
 
     // Check the password match
-    if (pass1.current.value != pass2.current.value) {
+    if (pass1.current.value !== pass2.current.value) {
       console.log("Passwords don't match")
       setNotification('Passwords do not match. Please try again', 'error')
     } else {

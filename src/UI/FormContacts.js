@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   StyledPopup,
@@ -17,117 +18,98 @@ import {
 } from './CommonStylesForms'
 
 function FormContacts(props) {
+  const contactsState = useSelector((state) => state.contacts)
+  const contactSelected = contactsState.contactSelected
+
   // Assigning contact values from props
-  const contact_id = props.contactSelected
-    ? JSON.parse(JSON.stringify(props.contactSelected.contact_id))
+  const contact_id = contactSelected
+    ? JSON.parse(JSON.stringify(contactSelected.contact_id))
     : ''
   const email =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.email))
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.email))
       : ''
   const phone =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.phone))
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.phone))
       : ''
   const street_address =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.street_address)
-        )
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.street_address))
       : ''
   const city =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.city))
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.city))
       : ''
   const state_province_region =
-    props.contactSelected && props.contactSelected.Demographic
+    contactSelected && contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Demographic.state_province_region
-          )
+          JSON.stringify(contactSelected.Demographic.state_province_region)
         )
       : ''
   const postal_code =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.postal_code)
-        )
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.postal_code))
       : ''
   const country =
-    props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.country))
+    contactSelected && contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(contactSelected.Demographic.country))
       : ''
-  // const country =
-  //   props.contactSelected &&
-  //   props.contactSelected.Demographic &&
-  //   props.contactSelected.Demographic.address
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.address.country)
-  //       )
-  //     : ''
   const passport_number =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Passport.passport_number)
-        )
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.passport_number))
       : ''
   const surname =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.surname))
       : ''
   const given_names =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.given_names))
       : ''
   const sex =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.sex))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.sex))
       : ''
   const date_of_birth =
-    props.contactSelected && props.contactSelected.Passport
+    contactSelected && contactSelected.Passport
       ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Passport.date_of_birth.split('T')[0]
-          )
+          JSON.stringify(contactSelected.Passport.date_of_birth.split('T')[0])
         )
       : ''
   const place_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Passport.place_of_birth)
-        )
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.place_of_birth))
       : ''
   const nationality =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.nationality))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.nationality))
       : ''
   const date_of_issue =
-    props.contactSelected && props.contactSelected.Passport
+    contactSelected && contactSelected.Passport
       ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Passport.date_of_issue.split('T')[0]
-          )
+          JSON.stringify(contactSelected.Passport.date_of_issue.split('T')[0])
         )
       : ''
   const date_of_expiration =
-    props.contactSelected && props.contactSelected.Passport
+    contactSelected && contactSelected.Passport
       ? JSON.parse(
           JSON.stringify(
-            props.contactSelected.Passport.date_of_expiration.split('T')[0]
+            contactSelected.Passport.date_of_expiration.split('T')[0]
           )
         )
       : ''
   const type =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.type))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.type))
       : ''
   const issuing_country =
-    props.contactSelected && props.contactSelected.Passport
-      ? props.contactSelected.Passport.issuing_country
+    contactSelected && contactSelected.Passport
+      ? contactSelected.Passport.issuing_country
       : ''
   const authority =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.authority))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.authority))
       : ''
 
   const contactForm = useRef()
@@ -138,21 +120,19 @@ function FormContacts(props) {
 
     // Assembling demographics JSON
     const demographics = {}
-    demographics.contact_id = props.contactSelected.contact_id
+    demographics.contact_id = contactSelected.contact_id
     demographics.email = form.get('email')
     demographics.phone = form.get('phone')
-    // demographics.address = {}
     demographics.street_address = form.get('street_address')
     demographics.city = form.get('city')
     demographics.state_province_region = form.get('state_province_region')
     demographics.postal_code = form.get('postal_code')
-    // demographics.zip_code = form.get('zip_code')
     demographics.country = form.get('country')
 
     props.submitDemographics(demographics, e)
 
     const passport = {}
-    passport.contact_id = props.contactSelected.contact_id
+    passport.contact_id = contactSelected.contact_id
     passport.passport_number = form.get('passport_number')
     passport.surname = form.get('surname')
     passport.given_names = form.get('given_names')
@@ -165,9 +145,9 @@ function FormContacts(props) {
     passport.type = form.get('type')
     passport.issuing_country = form.get('issuing_country')
     passport.authority = form.get('authority')
-    passport.photo = props.contactSelected.Passport
-      ? props.contactSelected.Passport.photo
-        ? props.contactSelected.Passport.photo.data
+    passport.photo = contactSelected.Passport
+      ? contactSelected.Passport.photo
+        ? contactSelected.Passport.photo.data
         : ''
       : ''
 
@@ -259,14 +239,6 @@ function FormContacts(props) {
                   placeholder="USA"
                 ></InputFieldModal>
               </InputBox>
-              {/* <InputBox>
-                <ModalLabel htmlFor="country">Country</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="country"
-                  defaultValue={country}
-                ></InputFieldModal>
-              </InputBox> */}
               <InputBox>
                 <ModalLabel htmlFor="contact_id"></ModalLabel>
                 <InputFieldModal

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 
 import {
   StyledPopup,
@@ -42,7 +42,6 @@ function FormInvitationAccept(props) {
     }
 
     closeModal()
-    // window.location.reload()
   }
 
   return (

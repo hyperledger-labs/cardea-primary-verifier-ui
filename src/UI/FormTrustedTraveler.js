@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
+import { useSelector } from 'react-redux'
 
 import styled from 'styled-components'
 import Popup from 'reactjs-popup'
@@ -116,27 +117,30 @@ const InputField = styled.input`
   }
 `
 
-const Select = styled.select`
-  color: ${(props) => props.theme.text_color};
-  font-size: 1.5em;
-  height: 30px;
-  width: 50%;
-`
+// const Select = styled.select`
+//   color: ${(props) => props.theme.text_color};
+//   font-size: 1.5em;
+//   height: 30px;
+//   width: 50%;
+// `
 
 function FormTrustedTraveler(props) {
+  const contactsState = useSelector((state) => state.contacts)
+  const contactSelected = contactsState.contactSelected
+
   // Assigning contact values from props
   const trusted_traveler_id = ''
   const first_name =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.given_names))
       : ''
   const last_name =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.surname))
       : ''
   const date_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.date_of_birth))
+    contactSelected && contactSelected.Passport
+      ? JSON.parse(JSON.stringify(contactSelected.Passport.date_of_birth))
       : ''
   const trusted_date_time = ''
 
@@ -147,10 +151,7 @@ function FormTrustedTraveler(props) {
     const form = new FormData(travelerForm.current)
 
     let attributes = {}
-    if (props.contactSelected) {
-      // const traveler = props.contactSelected.Traveler
-      // const passport = props.contactSelected.Passport
-
+    if (contactSelected) {
       attributes = [
         {
           name: 'trusted_traveler_id',
@@ -175,7 +176,7 @@ function FormTrustedTraveler(props) {
       ]
     }
     let newCredential = {
-      connectionID: props.contactSelected.Connections[0].connection_id,
+      connectionID: contactSelected.Connections[0].connection_id,
       schemaID: 'X2JpGAqC7ZFY4hwKG6kLw9:2:Trusted_Traveler:1.0',
       schemaVersion: '1.0',
       schemaName: 'Trusted_Traveler',

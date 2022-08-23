@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { DateTime } from 'luxon'
+import React from 'react'
+import { useSelector } from 'react-redux'
 
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
@@ -7,15 +7,15 @@ import PageSection from './PageSection.js'
 import { AttributeTable, AttributeRow } from './CommonStylesTables'
 
 function Credential(props) {
-  const history = props.history
+  const credentialsState = useSelector((state) => state.credentials)
   const credential = props.credential
-  const credentials = props.credentials
+  const credentials = credentialsState.credentials
 
   let credentialSelected = ''
   let attributesArray = ''
 
   for (let i = 0; i < credentials.length; i++) {
-    if (credentials[i].credential_exchange_id == credential) {
+    if (credentials[i].credential_exchange_id === credential) {
       credentialSelected = credentials[i]
       attributesArray =
         credentialSelected.credential_proposal_dict.credential_proposal
@@ -52,10 +52,18 @@ function Credential(props) {
       new Date(credentialSelected.created_at).toISOString().substring(0, 10) ||
       ''
     patient_given = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'traveler_given_names') return attribute
+      if (attribute.name === 'traveler_given_names') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_sur = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'traveler_surnames') return attribute
+      if (attribute.name === 'traveler_surnames') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_name = patient_given.value + ' ' + patient_sur.value
     // Values that depend on the credential being issued

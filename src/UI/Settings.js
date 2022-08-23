@@ -1,4 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled, { useTheme } from 'styled-components'
 
@@ -130,25 +133,30 @@ const Form = styled.form`
 `
 
 function Settings(props) {
+  const dispatch = useDispatch()
+  const settingsState = useSelector((state) => state.settings)
+  const notificationsState = useSelector((state) => state.notifications)
+
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+  const smtpConf = settingsState.smtp
+
   // Accessing notification context
   const setNotification = useNotification()
 
-  const error = props.errorMessage
-  const success = props.successMessage
-  let smtpConf = props.smtp
-  // const messageEventCounter = props.messageEventCounter
-
   useEffect(() => {
     if (success) {
-      // console.log('SUCCESS RAN')
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
-      // console.log('ERROR RAN')
       setNotification(error, 'error')
-      props.clearResponseState()
-    }
-  }, [error, success, props, setNotification])
+      dispatch(clearNotificationState())
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+    } else return
+  }, [error, success, warning, setNotification, dispatch])
 
   // File state
   const [selectedFavicon, setSelectedFile] = useState('')
@@ -486,14 +494,20 @@ function Settings(props) {
           <BlockInput
             name="organizationName"
             placeholder="Acme Co."
-            defaultValue={props.organizationName ? props.organizationName : ''}
+            defaultValue={
+              settingsState.organizationName
+                ? settingsState.organizationName
+                : ''
+            }
             ref={organizationName}
           />
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
             placeholder="Acme Co."
-            defaultValue={props.siteTitle ? props.siteTitle : ''}
+            defaultValue={
+              settingsState.siteTitle ? settingsState.siteTitle : ''
+            }
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>
@@ -726,7 +740,6 @@ function Settings(props) {
           <BlockInput
             name="mailUsername"
             ref={mailUsername}
-            ref={host}
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
             }

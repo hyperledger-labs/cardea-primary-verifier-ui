@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
-// import FormContacts from './FormContacts'
 import FormQR from './FormQR'
-import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
 
@@ -13,10 +12,8 @@ import { ActionButton } from './CommonStylesForms'
 import { CanUser } from './CanUser'
 
 function Contacts(props) {
-  const localUser = props.loggedInUserState
-
-  // Accessing notification context
-  // const setNotification = useNotification()
+  const contactsState = useSelector((state) => state.contacts)
+  const contacts = contactsState.contacts
 
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
 
@@ -28,15 +25,7 @@ function Contacts(props) {
     }
   }
 
-  // Submits the form and shows notification
-  // function submitNewContact(e) {
-  //   e.preventDefault()
-  //   setNotification('Contact was successfully added!', 'notice')
-  // }
-
   const history = props.history
-
-  const contacts = props.contacts
 
   const contactRows = contacts.map((contact) => {
     return (
@@ -76,7 +65,6 @@ function Contacts(props) {
           </DataTable>
         </PageSection>
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <ActionButton
@@ -95,11 +83,6 @@ function Contacts(props) {
           closeContactModal={closeContactModal}
           QRCodeURL={props.QRCodeURL}
         />
-        {/*<FormContacts
-          contactModalIsOpen={contactModalIsOpen}
-          closeContactModal={closeContactModal}
-          submitContact={submitNewContact}
-        />*/}
       </div>
     </>
   )
