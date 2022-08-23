@@ -7,7 +7,7 @@ import presentationsReducer from './redux/presentationsReducer'
 import usersReducer from './redux/usersReducer'
 import settingsReducer from './redux/settingsReducer'
 import notificationsReducer from './redux/notificationsReducer'
-import { composeWithDevTools } from 'redux-devtools-extension'
+// import { composeWithDevTools } from 'redux-devtools-extension'
 
 const rootReducer = combineReducers({
   login: loginReducer,
@@ -19,4 +19,7 @@ const rootReducer = combineReducers({
   settings: settingsReducer,
 })
 
-export default createStore(rootReducer, composeWithDevTools())
+export default createStore(
+  rootReducer
+  //  composeWithDevTools()
+)
