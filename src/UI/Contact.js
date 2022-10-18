@@ -273,13 +273,18 @@ function Contact(props) {
       type: type,
     })
     // Does that sound right?
-    setNotification('Credential offer was successfully sent!', 'notice')
+    setNotification(
+      'The requested credential has been submitted for issuance!',
+      'notice'
+    )
   }
 
   // Submits the credential form and shows notification
   function submitNewCredential(newCredential, e) {
     e.preventDefault()
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
+
+    console.log('11111 Log from submitNewCredential')
 
     setNotification('Credential offer was successfully sent!', 'notice')
   }
