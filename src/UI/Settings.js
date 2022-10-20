@@ -141,6 +141,7 @@ function Settings(props) {
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
   const smtpConf = settingsState.smtp
+  const theme = settingsState.theme
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -225,8 +226,9 @@ function Settings(props) {
   }
 
   // Save style settings
-  function saveStyle() {
+  function saveStyle(e) {
     props.saveTheme()
+    props.clearStylesArray([])
   }
 
   // Save SMTP settings
@@ -828,7 +830,11 @@ function Settings(props) {
         </ReactTooltip>
         <Form onSubmit={handleSubmit}>
           <H3>Change primary color</H3>
-          <Input placeholder="Hex or string" ref={primaryColorInput} />
+          <Input
+            defaultValue={theme.primary_color}
+            placeholder="Hex or string"
+            ref={primaryColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -852,7 +858,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change secondary color</H3>
-          <Input placeholder="Hex or string" ref={secondaryColorInput} />
+          <Input
+            defaultValue={theme.secondary_color}
+            placeholder="Hex or string"
+            ref={secondaryColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -876,7 +886,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change neutral color</H3>
-          <Input placeholder="Hex or string" ref={neutralColorInput} />
+          <Input
+            defaultValue={theme.neutral_color}
+            placeholder="Hex or string"
+            ref={neutralColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -900,7 +914,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change negative color</H3>
-          <Input placeholder="Hex or string" ref={negativeColorInput} />
+          <Input
+            defaultValue={theme.negative_color}
+            placeholder="Hex or string"
+            ref={negativeColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -924,7 +942,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change warning color</H3>
-          <Input placeholder="Hex or string" ref={warningColorInput} />
+          <Input
+            defaultValue={theme.warning_color}
+            placeholder="Hex or string"
+            ref={warningColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -948,7 +970,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change positive color</H3>
-          <Input placeholder="Hex or string" ref={positiveColorInput} />
+          <Input
+            defaultValue={theme.positive_color}
+            placeholder="Hex or string"
+            ref={positiveColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -972,7 +998,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change text color</H3>
-          <Input placeholder="Hex or string" ref={textColorInput} />
+          <Input
+            defaultValue={theme.text_color}
+            placeholder="Hex or string"
+            ref={textColorInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -991,7 +1021,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change text light</H3>
-          <Input placeholder="Hex or string" ref={textLightInput} />
+          <Input
+            defaultValue={theme.text_light}
+            placeholder="Hex or string"
+            ref={textLightInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -1010,7 +1044,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change border</H3>
-          <Input placeholder="5px solid #ff0000 or string" ref={borderInput} />
+          <Input
+            defaultValue={theme.border}
+            placeholder="5px solid #ff0000 or string"
+            ref={borderInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -1030,6 +1068,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change drop shadow</H3>
           <Input
+            defaultValue={theme.drop_shadow}
             placeholder="3px 3px 3px rgba(0, 0, 0, 0.3)"
             ref={dropShadowInput}
           />
@@ -1053,7 +1092,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change primary background</H3>
-          <Input placeholder="Hex or string" ref={primaryBackgroundInput} />
+          <Input
+            defaultValue={theme.background_primary}
+            placeholder="Hex or string"
+            ref={primaryBackgroundInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -1077,7 +1120,11 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <H3>Change secondary background</H3>
-          <Input placeholder="Hex or string" ref={secondaryBackgroundInput} />
+          <Input
+            defaultValue={theme.background_secondary}
+            placeholder="Hex or string"
+            ref={secondaryBackgroundInput}
+          />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
