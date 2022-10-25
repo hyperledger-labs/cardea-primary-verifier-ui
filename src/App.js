@@ -881,6 +881,11 @@ function App() {
     sendMessage('SETTINGS', 'SET_THEME', theme)
   }
 
+  //(RomanStepanyan) Removing all styles from an array of styles to desible undo button
+  const clearStylesArray = () => {
+    setStylesArray([])
+  }
+
   const addStylesToArray = (key) => {
     let position = stylesArray.indexOf(key)
     // if cannot find indexOf style
@@ -1312,6 +1317,7 @@ function App() {
                               saveTheme={saveTheme}
                               undoStyle={undoStyle}
                               stylesArray={stylesArray}
+                              clearStylesArray={clearStylesArray}
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
