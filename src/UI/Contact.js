@@ -284,8 +284,6 @@ function Contact(props) {
     e.preventDefault()
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
 
-    console.log('11111 Log from submitNewCredential')
-
     setNotification('Credential offer was successfully sent!', 'notice')
   }
 
