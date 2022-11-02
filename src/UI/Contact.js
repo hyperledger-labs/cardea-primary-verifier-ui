@@ -273,7 +273,10 @@ function Contact(props) {
       type: type,
     })
     // Does that sound right?
-    setNotification('Credential offer was successfully sent!', 'notice')
+    setNotification(
+      'The requested credential has been submitted for issuance!',
+      'notice'
+    )
   }
 
   // Submits the credential form and shows notification
